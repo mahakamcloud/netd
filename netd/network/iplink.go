@@ -5,19 +5,19 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type IPLink struct {
+type ipLink struct {
 	runner cmd_runner.CmdRunner
 }
 
-func NewIPLink() *IPLink {
-	return &IPLink{
+func NewIPLink() *ipLink {
+	return &ipLink{
 		runner: cmd_runner.New(),
 	}
 }
 
-func (i *IPLink) createTapDev(name string) error {
+func (i *ipLink) createTapDev(name string) error {
 	if i.tapDevExists(name) {
-		return "", nil
+		return nil
 	}
 	output, err := i.runner.CombinedOutput("ip", "tuntap", "add", "dev", name, "mode", "tap")
 	if err != nil {
@@ -28,7 +28,7 @@ func (i *IPLink) createTapDev(name string) error {
 	return nil
 }
 
-func (i *IPLink) tapDevExists(name string) bool {
+func (i *ipLink) tapDevExists(name string) bool {
 	output, err := i.runner.CombinedOutput("ip", "link", "show", "dev", name)
 	if err != nil {
 		log.Debugf("Tap device %v does not exists: %v", name, err)
@@ -38,7 +38,7 @@ func (i *IPLink) tapDevExists(name string) bool {
 	return true
 }
 
-func (i *IPLink) setIfaceUp(name string) (string, error) {
+func (i *ipLink) setIfaceUp(name string) (string, error) {
 	args := []string{"link", "set", "dev", name, "up"}
 	return i.runner.CombinedOutput("ip", args...)
 }

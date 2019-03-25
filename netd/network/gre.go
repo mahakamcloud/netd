@@ -26,15 +26,15 @@ func NewGRE(name string, remoteIP net.IP, key int) *gre {
 	}
 }
 
-func (g *gre) create(bridgeName string) error {
-	err := g.iplink.createTapDev(tapDevName)
+func (g *gre) Create(bridgeName string) error {
+	err := g.iplink.createTapDev(g.name)
 	if err != nil {
 		return err
 	}
 
 	err = g.ovsClient.VSwitch.AddPort(bridgeName, g.name)
 	if err != nil {
-		log.Debugf("Error adding port %v to bridge %v: %v", tapDevName, bridgeName, err)
+		log.Debugf("Error adding port %v to bridge %v: %v", g.name, bridgeName, err)
 		return err
 	}
 

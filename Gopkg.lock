@@ -162,7 +162,7 @@
 
 [[projects]]
   branch = "feature-persist-node"
-  digest = "1:98302a1937fe9d9c70a3656109560cc70f729dcbcacdbe884a7fa05e2f6d75f9"
+  digest = "1:4712ed0fd38f89a1acb15443b00d261539f779439eecd8b1108906ffb5a0a54c"
   name = "github.com/mahakamcloud/mahakam"
   packages = [
     "pkg/api/v1",
@@ -176,7 +176,6 @@
     "pkg/config",
     "pkg/netd/network",
     "pkg/netd/provisioner",
-    "pkg/netd/util",
     "pkg/task",
     "pkg/utils",
   ]
@@ -299,7 +298,6 @@
     "github.com/mahakamcloud/mahakam/pkg/cmd_runner",
     "github.com/mahakamcloud/mahakam/pkg/netd/network",
     "github.com/mahakamcloud/mahakam/pkg/netd/provisioner",
-    "github.com/mahakamcloud/mahakam/pkg/netd/util",
     "github.com/mahakamcloud/mahakam/pkg/task",
     "github.com/sirupsen/logrus",
   ]

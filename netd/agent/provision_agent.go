@@ -8,12 +8,12 @@ import (
 	"github.com/digitalocean/go-openvswitch/ovs"
 	"github.com/sirupsen/logrus"
 
-	"github.com/mahakamcloud/mahakam/pkg/api/v1"
+	v1 "github.com/mahakamcloud/mahakam/pkg/api/v1"
 	mahakamclient "github.com/mahakamcloud/mahakam/pkg/client"
 	"github.com/mahakamcloud/mahakam/pkg/netd/network"
 	"github.com/mahakamcloud/mahakam/pkg/netd/provisioner"
-	"github.com/mahakamcloud/mahakam/pkg/netd/util"
 	"github.com/mahakamcloud/mahakam/pkg/task"
+	"github.com/mahakamcloud/netd/netd/util"
 )
 
 const (

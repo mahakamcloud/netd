@@ -8,55 +8,41 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func createTapDev(tapDevName string) error {
-	iplink := NewIPLink()
-	_, err := iplink.CreateTapDev(tapDevName)
-	return err
+type gre struct {
+	name      string
+	remoteIP  net.IP
+	key       int
+	ovsClient *ovs.Client
+	iplink    *ipLink
 }
 
-func createPort(bridgeName, portName string) error {
-	o := ovs.New(
-		ovs.Sudo(),
-	)
-	return o.VSwitch.AddPort(bridgeName, portName)
-}
-
-// TODO: OVSwitch set interface is always overwritten. Do not execute if interface set.
-func createGRETunnel(portName string, remoteIP net.IP, greKey int) error {
-	iFaceOptions := ovs.InterfaceOptions{
-		Type:     ovs.InterfaceTypeGRE,
-		RemoteIP: remoteIP.String(),
-		Key:      strconv.Itoa(greKey),
+func NewGRE(name string, remoteIP net.IP, key int) *gre {
+	return &gre{
+		name:      name,
+		remoteIP:  remoteIP,
+		key:       key,
+		ovsClient: ovs.New(),
+		iplink:    NewIPLink(),
 	}
-	o := ovs.New(
-		ovs.Sudo(),
-	)
-	return o.VSwitch.Set.Interface(portName, iFaceOptions)
 }
 
-func connectToRemote(bridgeName string, tapDevName string, remoteIP net.IP, greKey int) error {
-	err := createBridge(bridgeName)
+func (g *gre) create(bridgeName string) error {
+	err := g.iplink.createTapDev(tapDevName)
 	if err != nil {
-		log.Debugf("Error creating bridge %v: %v", bridgeName, err)
 		return err
 	}
 
-	err = createTapDev(tapDevName)
-	if err != nil {
-		log.Debugf("Error creating tap device %v: %v", tapDevName, err)
-		return err
-	}
-
-	err = createPort(bridgeName, tapDevName)
+	err = g.ovsClient.VSwitch.AddPort(bridgeName, g.name)
 	if err != nil {
 		log.Debugf("Error adding port %v to bridge %v: %v", tapDevName, bridgeName, err)
 		return err
 	}
 
-	err = createGRETunnel(tapDevName, remoteIP, greKey)
-	if err != nil {
-		log.Debugf("Error creating GRE tunnel on tap device %v with remote IP %v and GRE key %v: %v", tapDevName, remoteIP, greKey, err)
-		return err
+	// TODO: OVSwitch set interface is always overwritten. Do not execute if interface set.
+	iFaceOptions := ovs.InterfaceOptions{
+		Type:     ovs.InterfaceTypeGRE,
+		RemoteIP: g.remoteIP.String(),
+		Key:      strconv.Itoa(g.key),
 	}
-	return nil
+	return g.ovsClient.VSwitch.Set.Interface(g.name, iFaceOptions)
 }

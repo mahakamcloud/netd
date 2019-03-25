@@ -15,11 +15,17 @@ func NewIPLink() *IPLink {
 	}
 }
 
-func (i *IPLink) CreateTapDev(name string) (string, error) {
+func (i *IPLink) createTapDev(name string) error {
 	if i.tapDevExists(name) {
 		return "", nil
 	}
-	return i.runner.CombinedOutput("ip", "tuntap", "add", "dev", name, "mode", "tap")
+	output, err := i.runner.CombinedOutput("ip", "tuntap", "add", "dev", name, "mode", "tap")
+	if err != nil {
+		log.Errorf("Error creating tap device %v: %v", name, err)
+		return err
+	}
+	log.Debugf("Tap device %v created: %v", name, output)
+	return nil
 }
 
 func (i *IPLink) tapDevExists(name string) bool {
@@ -32,7 +38,7 @@ func (i *IPLink) tapDevExists(name string) bool {
 	return true
 }
 
-func (i *IPLink) SetIfaceUp(name string) (string, error) {
+func (i *IPLink) setIfaceUp(name string) (string, error) {
 	args := []string{"link", "set", "dev", name, "up"}
 	return i.runner.CombinedOutput("ip", args...)
 }

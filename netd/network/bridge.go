@@ -1,14 +1,22 @@
 package network
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/digitalocean/go-openvswitch/ovs"
 )
 
-// NewBridge creates a new network bridge if it doesn't exists.
-func createBridge(bridgeName string) error {
-	o := ovs.New(
-		ovs.Sudo(),
-	)
+type bridge struct {
+	name string
+}
 
-	return o.VSwitch.AddBridge(bridgeName)
+func NewBridge(name string) (*bridge, error) {
+	b := &bridge{name}
+	o := ovs.New()
+	err := o.VSwitch.AddBridge(name)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Error creating a new bridge %v: %v", name, err))
+	}
+	return b, nil
 }

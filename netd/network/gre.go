@@ -9,8 +9,8 @@ import (
 )
 
 func createTapDev(tapDevName string) error {
-	ipUtil := NewIPUtil()
-	_, err := ipUtil.CreateTapDev(tapDevName)
+	iplink := NewIPLink()
+	_, err := iplink.CreateTapDev(tapDevName)
 	return err
 }
 

@@ -10,8 +10,8 @@ import (
 func TestHostIsCreated(t *testing.T) {
 	h, _ := New("localhost", "127.0.0.1")
 
-	assert.Equal(t, h.name, "localhost")
-	assert.Equal(t, h.ipAddr, net.IPv4(127, 0, 0, 1))
+	assert.Equal(t, h.Name, "localhost")
+	assert.Equal(t, h.IPAddr, net.IPv4(127, 0, 0, 1))
 }
 
 func TestHostCreationFailsForInvalidIp(t *testing.T) {

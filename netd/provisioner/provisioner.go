@@ -30,7 +30,7 @@ func generateGRETunnelName(clusterName, localHostName, remoteHostName string) st
 }
 
 func (p *provisioner) provisionClusterNetwork(cl *cluster.Cluster, localhost *host.Host, remotehosts []*host.Host) error {
-	bridgeName := generateBridgeName(cl.Name())
+	bridgeName := generateBridgeName(cl.Name)
 	bridge, err := network.NewBridge(bridgeName)
 	if err != nil {
 		return err
@@ -41,8 +41,8 @@ func (p *provisioner) provisionClusterNetwork(cl *cluster.Cluster, localhost *ho
 	// TODO: make error messages Mahakam way
 	errs := make([]error, 0)
 	for _, r := range remotehosts {
-		greName := generateGRETunnelName(cl.Name(), localhost.Name(), r.Name())
-		gre := network.NewGRE(greName, r.IPAddr(), cl.GREKey())
+		greName := generateGRETunnelName(cl.Name, localhost.Name, r.Name)
+		gre := network.NewGRE(greName, r.IPAddr, cl.GREKey)
 		err = gre.Create(bridgeName)
 		if err != nil {
 			errs = append(errs, err)
@@ -57,7 +57,7 @@ func (p *provisioner) provisionClusterNetwork(cl *cluster.Cluster, localhost *ho
 	}
 	// register libvirt network
 
-	err = p.registerLibvirtNetwork(cl.Name(), bridge)
+	err = p.registerLibvirtNetwork(cl.Name, bridge)
 	if err != nil {
 		return err
 	}

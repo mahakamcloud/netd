@@ -2,12 +2,28 @@
 
 
 [[projects]]
+  digest = "1:d688f4ad71b5dfad95c2d74cb0feac09f8f3c32ae5cecc078230dbdeece39e53"
+  name = "github.com/codegangsta/negroni"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "c6a59be0ce122566695fbd5e48a77f8f10c8a63a"
+  version = "v1.0.0"
+
+[[projects]]
   branch = "master"
   digest = "1:f954567bcc95e4614c437b44cfd2bf52b4b3c424a5316b725f030c9f3224def0"
   name = "github.com/digitalocean/go-openvswitch"
   packages = ["ovs"]
   pruneopts = "UT"
   revision = "10882ec21235e46a2aa4b33a6e770b5bcaeb40fd"
+
+[[projects]]
+  digest = "1:ca59b1175189b3f0e9f1793d2c350114be36eaabbe5b9f554b35edee1de50aea"
+  name = "github.com/gorilla/mux"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "a7962380ca08b5a188038c69871b8d3fbdf31e89"
+  version = "v1.7.0"
 
 [[projects]]
   digest = "1:31e761d97c76151dde79e9d28964a812c46efc5baee4085b86f68f0c654450de"
@@ -26,10 +42,11 @@
   version = "v5.1.0"
 
 [[projects]]
-  digest = "1:a7c7d7e8e8f862afc251b615b669dcd7d6a4c0407a266e6be1b3fd2a0946c6fe"
+  digest = "1:6fd73857b81f85be8670aae87d14a30855ad327e4edcba258d4ddf3dc3317557"
   name = "github.com/newrelic/go-agent"
   packages = [
     ".",
+    "_integrations/nrgorilla/v1",
     "internal",
     "internal/cat",
     "internal/jsonx",
@@ -73,9 +90,12 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/codegangsta/negroni",
     "github.com/digitalocean/go-openvswitch/ovs",
+    "github.com/gorilla/mux",
     "github.com/libvirt/libvirt-go",
     "github.com/newrelic/go-agent",
+    "github.com/newrelic/go-agent/_integrations/nrgorilla/v1",
     "github.com/sirupsen/logrus",
   ]
   solver-name = "gps-cdcl"

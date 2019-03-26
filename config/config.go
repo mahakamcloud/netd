@@ -45,3 +45,11 @@ func getNewRelicConfigOrPanic() (newrelic.Config, error) {
 	nrConfig.Enabled = nrEnabled
 	return nrConfig, nil
 }
+
+func Port() int {
+	return appConfig.port
+}
+
+func NewRelic() newrelic.Config {
+	return appConfig.newRelic
+}

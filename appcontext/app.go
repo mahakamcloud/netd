@@ -3,8 +3,8 @@ package appcontext
 import (
 	"fmt"
 
+	"github.com/mahakamcloud/netd/config"
 	newrelic "github.com/newrelic/go-agent"
-	"source.golabs.io/data-science/go_surge_app/config"
 )
 
 type appContext struct {
@@ -24,7 +24,7 @@ func panicIfError(err error, werr error) {
 }
 
 func Init() {
-	newrelicApp, err := newrelic.NewApplication(config.Newrelic())
+	newrelicApp, err := newrelic.NewApplication(config.NewRelic())
 	panicIfError(err, fmt.Errorf("Unable initiate NewRelic: %v", err))
 	context = &appContext{
 		newrelicApp: newrelicApp,

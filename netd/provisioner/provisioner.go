@@ -42,7 +42,7 @@ func (p *provisioner) provisionClusterNetwork(cl *cluster.Cluster, localhost *ho
 	errs := make([]error, 0)
 	for _, r := range remotehosts {
 		greName := generateGRETunnelName(cl.Name(), localhost.Name(), r.Name())
-		gre := network.NewGRE(greName, r.IPAddr(), cl.Key())
+		gre := network.NewGRE(greName, r.IPAddr(), cl.GREKey())
 		err = gre.Create(bridgeName)
 		if err != nil {
 			errs = append(errs, err)

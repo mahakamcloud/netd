@@ -1,14 +1,18 @@
 package cluster
 
 type Cluster struct {
-	name string
-	key  int
+	name   string `json:"name"`
+	greKey int    `json:"key"`
+}
+
+func New(name string, greKey int) *Cluster {
+	return &Cluster{name, greKey}
 }
 
 func (c *Cluster) Name() string {
 	return c.name
 }
 
-func (c *Cluster) Key() int {
-	return c.key
+func (c *Cluster) GREKey() int {
+	return c.greKey
 }

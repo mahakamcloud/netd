@@ -1,17 +1,17 @@
 package network
 
 import (
-	"github.com/mahakamcloud/mahakam/pkg/cmd_runner"
+	"github.com/mahakamcloud/netd/cmdrunner"
 	log "github.com/sirupsen/logrus"
 )
 
 type ipLink struct {
-	runner cmd_runner.CmdRunner
+	runner cmdrunner.CmdRunner
 }
 
 func NewIPLink() *ipLink {
 	return &ipLink{
-		runner: cmd_runner.New(),
+		runner: cmdrunner.New(),
 	}
 }
 

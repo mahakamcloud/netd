@@ -1,0 +1,9 @@
+log_level: "debug"
+host: "localhost"
+app_port: 3000
+
+new_relic_enabled: "false"
+new_relic_app_name: "golang-sample-app"
+new_relic_license_key: "dummydummydummydummydummydummydummydummy"
+
+docs_path: "./docs"

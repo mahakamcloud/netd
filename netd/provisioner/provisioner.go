@@ -6,16 +6,12 @@ import (
 	"strings"
 
 	"github.com/libvirt/libvirt-go"
+	"github.com/mahakamcloud/netd/netd/cluster"
 	"github.com/mahakamcloud/netd/netd/host"
 	"github.com/mahakamcloud/netd/netd/network"
 )
 
 type provisioner struct {
-}
-
-type cluster struct {
-	name string
-	key  int
 }
 
 func generateBridgeName(clusterName string) string {
@@ -33,8 +29,8 @@ func generateGRETunnelName(clusterName, localHostName, remoteHostName string) st
 	return fmt.Sprintf("%s_%s_%s", clusterName, localHostName, remoteHostName)
 }
 
-func (p *provisioner) provisionClusterNetwork(cl *cluster, localhost *host.Host, remotehosts []*host.Host) error {
-	bridgeName := generateBridgeName(cl.name)
+func (p *provisioner) provisionClusterNetwork(cl *cluster.Cluster, localhost *host.Host, remotehosts []*host.Host) error {
+	bridgeName := generateBridgeName(cl.Name())
 	bridge, err := network.NewBridge(bridgeName)
 	if err != nil {
 		return err
@@ -45,8 +41,8 @@ func (p *provisioner) provisionClusterNetwork(cl *cluster, localhost *host.Host,
 	// TODO: make error messages Mahakam way
 	errs := make([]error, 0)
 	for _, r := range remotehosts {
-		greName := generateGRETunnelName(cl.name, localhost.Name(), r.Name())
-		gre := network.NewGRE(greName, r.IPAddr(), cl.key)
+		greName := generateGRETunnelName(cl.Name(), localhost.Name(), r.Name())
+		gre := network.NewGRE(greName, r.IPAddr(), cl.Key())
 		err = gre.Create(bridgeName)
 		if err != nil {
 			errs = append(errs, err)
@@ -61,7 +57,7 @@ func (p *provisioner) provisionClusterNetwork(cl *cluster, localhost *host.Host,
 	}
 	// register libvirt network
 
-	err = p.registerLibvirtNetwork(cl.name, bridge)
+	err = p.registerLibvirtNetwork(cl.Name(), bridge)
 	if err != nil {
 		return err
 	}

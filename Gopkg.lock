@@ -2,147 +2,12 @@
 
 
 [[projects]]
-  digest = "1:a2682518d905d662d984ef9959984ef87cecb777d379bfa9d9fe40e78069b3e4"
-  name = "github.com/PuerkitoBio/purell"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "44968752391892e1b0d0b821ee79e9a85fa13049"
-  version = "v1.1.1"
-
-[[projects]]
-  branch = "master"
-  digest = "1:c739832d67eb1e9cc478a19cc1a1ccd78df0397bf8a32978b759152e205f644b"
-  name = "github.com/PuerkitoBio/urlesc"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "de5bf2ad457846296e2031421a34e2568e304e35"
-
-[[projects]]
-  digest = "1:320e7ead93de9fd2b0e59b50fd92a4d50c1f8ab455d96bc2eb083267453a9709"
-  name = "github.com/asaskevich/govalidator"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "ccb8e960c48f04d6935e72476ae4a51028f9e22f"
-  version = "v9"
-
-[[projects]]
   branch = "master"
   digest = "1:f954567bcc95e4614c437b44cfd2bf52b4b3c424a5316b725f030c9f3224def0"
   name = "github.com/digitalocean/go-openvswitch"
   packages = ["ovs"]
   pruneopts = "UT"
   revision = "10882ec21235e46a2aa4b33a6e770b5bcaeb40fd"
-
-[[projects]]
-  branch = "master"
-  digest = "1:7fb51688eadf38272411852d7a2b3538c7caff53309abee6c0964a83c00fe69e"
-  name = "github.com/globalsign/mgo"
-  packages = [
-    "bson",
-    "internal/json",
-  ]
-  pruneopts = "UT"
-  revision = "eeefdecb41b842af6dc652aaea4026e8403e62df"
-
-[[projects]]
-  digest = "1:8c4be86399428a81749056c2d67feba95c1784b742ccf03ac7527d0b426bf22a"
-  name = "github.com/go-openapi/analysis"
-  packages = [
-    ".",
-    "internal",
-  ]
-  pruneopts = "UT"
-  revision = "e2f3fdbb7ed0e56e070ccbfb6fc75b288a33c014"
-  version = "v0.19.0"
-
-[[projects]]
-  digest = "1:ac4b35a4bba11edb2110fca0707bae03ae92fbd8222e6b483465d98efaabfb97"
-  name = "github.com/go-openapi/errors"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "d9664f9fab8994271e573ed69cf2adfc09b7a800"
-  version = "v0.17.2"
-
-[[projects]]
-  digest = "1:953a2628e4c5c72856b53f5470ed5e071c55eccf943d798d42908102af2a610f"
-  name = "github.com/go-openapi/jsonpointer"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "ef5f0afec364d3b9396b7b77b43dbe26bf1f8004"
-  version = "v0.19.0"
-
-[[projects]]
-  digest = "1:81210e0af657a0fb3638932ec68e645236bceefa4c839823db0c4d918f080895"
-  name = "github.com/go-openapi/jsonreference"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "8483a886a90412cd6858df4ea3483dce9c8e35a3"
-  version = "v0.19.0"
-
-[[projects]]
-  digest = "1:208878abf5fc4e435f9c382a06678f46be91270d0efa1f475134543f6ed7784a"
-  name = "github.com/go-openapi/loads"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "74628589c3b94e3526a842d24f46589980f5ab22"
-  version = "v0.19.0"
-
-[[projects]]
-  digest = "1:cc4f0df1c69dd1928f4dc32ab31a637fcfa4b04b09c78af965d67980cfbfc486"
-  name = "github.com/go-openapi/runtime"
-  packages = [
-    ".",
-    "client",
-    "logger",
-    "middleware",
-    "middleware/denco",
-    "middleware/header",
-    "middleware/untyped",
-    "security",
-  ]
-  pruneopts = "UT"
-  revision = "231d7876b7019dbcbfc97a7ba764379497b67c1d"
-  version = "v0.17.2"
-
-[[projects]]
-  digest = "1:34130204ce3bd3d32bd111e28d9155de1e78132dbf29b2c4cedeca510e954f3e"
-  name = "github.com/go-openapi/spec"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "53d776530bf78a11b03a7b52dd8a083086b045e5"
-  version = "v0.19.0"
-
-[[projects]]
-  digest = "1:ffa79f4705a3a85f2412d2d163c37acdf60d128c679e641c323a5de712e23d27"
-  name = "github.com/go-openapi/strfmt"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "edab9990ffc9b4a428f3306ecf4d18a069ca3317"
-  version = "v0.17.2"
-
-[[projects]]
-  digest = "1:32f3d2e7f343de7263c550d696fb8a64d3c49d8df16b1ddfc8e80e1e4b3233ce"
-  name = "github.com/go-openapi/swag"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "5899d5c5e619fda5fa86e14795a835f473ca284c"
-  version = "v0.17.2"
-
-[[projects]]
-  digest = "1:58541fddf3f4ec485710f1b346e7f647baf09a878a604e47e3668c600fe44076"
-  name = "github.com/go-openapi/validate"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "d2eab7d93009e9215fc85b2faa2c2f2a98c2af48"
-  version = "v0.17.2"
-
-[[projects]]
-  digest = "1:b60efdeb75d3c0ceed88783ac2495256aba3491a537d0f31401202579fd62a94"
-  name = "github.com/golang/mock"
-  packages = ["gomock"]
-  pruneopts = "UT"
-  revision = "51421b967af1f557f93a59e0057aaf15ca02e29c"
-  version = "v1.2.0"
 
 [[projects]]
   digest = "1:31e761d97c76151dde79e9d28964a812c46efc5baee4085b86f68f0c654450de"
@@ -162,45 +27,11 @@
 
 [[projects]]
   branch = "feature-persist-node"
-  digest = "1:4712ed0fd38f89a1acb15443b00d261539f779439eecd8b1108906ffb5a0a54c"
+  digest = "1:caff8ae85e0cdc0251fe8b65358297f110d28366970a29cb3f26a096efca1c78"
   name = "github.com/mahakamcloud/mahakam"
-  packages = [
-    "pkg/api/v1",
-    "pkg/api/v1/client",
-    "pkg/api/v1/client/apps",
-    "pkg/api/v1/client/clusters",
-    "pkg/api/v1/client/networks",
-    "pkg/api/v1/models",
-    "pkg/client",
-    "pkg/cmd_runner",
-    "pkg/config",
-    "pkg/netd/network",
-    "pkg/netd/provisioner",
-    "pkg/task",
-    "pkg/utils",
-  ]
+  packages = ["pkg/cmd_runner"]
   pruneopts = "UT"
   revision = "d5654359d8706d36af1e74e9f6fef514326144e1"
-
-[[projects]]
-  branch = "master"
-  digest = "1:df495c9184b4e6cbb9d55652236dbcbe72c65a1c8b6469da50722628cea474e7"
-  name = "github.com/mailru/easyjson"
-  packages = [
-    "buffer",
-    "jlexer",
-    "jwriter",
-  ]
-  pruneopts = "UT"
-  revision = "1de009706dbeb9d05f18586f0735fcdb7c524481"
-
-[[projects]]
-  digest = "1:53bc4cd4914cd7cd52139990d5170d6dc99067ae31c56530621b18b35fc30318"
-  name = "github.com/mitchellh/mapstructure"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "3536a929edddb9a5b34bd6861dc4a9647cb459fe"
-  version = "v1.1.2"
 
 [[projects]]
   digest = "1:e4c72127d910a96daf869a44f3dd563b86dbe6931a172863a0e99c5ff04b59e4"
@@ -212,35 +43,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:fd18b3e9b2ec7f9b5d268e94346dbcc425f0455e207f4d688597cd86001543b7"
-  name = "github.com/sparrc/go-ping"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "ef3ab45e41b017889941ea5bb796dd502d2b5a1b"
-
-[[projects]]
-  branch = "master"
   digest = "1:058e9504b9a79bfe86092974d05bb3298d2aa0c312d266d43148de289a5065d9"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   pruneopts = "UT"
   revision = "b7391e95e576cacdcdd422573063bc057239113d"
-
-[[projects]]
-  branch = "master"
-  digest = "1:09bbf025028b8b899c3052e0904ed4caf4be198494e01925ec2d6f40bb0998ad"
-  name = "golang.org/x/net"
-  packages = [
-    "bpf",
-    "icmp",
-    "idna",
-    "internal/iana",
-    "internal/socket",
-    "ipv4",
-    "ipv6",
-  ]
-  pruneopts = "UT"
-  revision = "e3b2ff56ed879efa686c9d09ed74f9bfe42f1a1d"
 
 [[projects]]
   branch = "master"
@@ -253,52 +60,13 @@
   pruneopts = "UT"
   revision = "f49334f85ddcf0f08d7fb6dd7363e9e6d6b777eb"
 
-[[projects]]
-  digest = "1:0c56024909189aee3364b7f21a95a27459f718aa7c199a5c111c36cfffd9eaef"
-  name = "golang.org/x/text"
-  packages = [
-    "collate",
-    "collate/build",
-    "internal/colltab",
-    "internal/gen",
-    "internal/tag",
-    "internal/triegen",
-    "internal/ucd",
-    "language",
-    "secure/bidirule",
-    "transform",
-    "unicode/bidi",
-    "unicode/cldr",
-    "unicode/norm",
-    "unicode/rangetable",
-    "width",
-  ]
-  pruneopts = "UT"
-  revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
-  version = "v0.3.0"
-
-[[projects]]
-  digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"
-  name = "gopkg.in/yaml.v2"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
-  version = "v2.2.2"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
     "github.com/digitalocean/go-openvswitch/ovs",
-    "github.com/go-openapi/swag",
     "github.com/libvirt/libvirt-go",
-    "github.com/mahakamcloud/mahakam/pkg/api/v1",
-    "github.com/mahakamcloud/mahakam/pkg/api/v1/client/clusters",
-    "github.com/mahakamcloud/mahakam/pkg/client",
     "github.com/mahakamcloud/mahakam/pkg/cmd_runner",
-    "github.com/mahakamcloud/mahakam/pkg/netd/network",
-    "github.com/mahakamcloud/mahakam/pkg/netd/provisioner",
-    "github.com/mahakamcloud/mahakam/pkg/task",
     "github.com/sirupsen/logrus",
   ]
   solver-name = "gps-cdcl"

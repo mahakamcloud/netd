@@ -6,6 +6,7 @@ VERSION ?= $(GIT_VERSION)
 OS := $(shell uname)
 SHELL := /bin/bash
 BASE = $(GOPATH)/src/github.com/mahakamcloud/netd
+APP_EXECUTABLE = ./out/netd
 
 dep: ## Get all the dependencies
 	dep ensure -v
@@ -23,3 +24,6 @@ test: dep ## run tests
 	@echo running tests...
 	go test -v $(shell go list -v ./... | grep -v /vendor/ | grep -v integration | grep -v /playground )
 
+build: test
+	mkdir -p out/
+	go build -o $(APP_EXECUTABLE)

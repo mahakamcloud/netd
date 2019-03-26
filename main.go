@@ -1,9 +1,13 @@
 package main
 
 import (
+	"os"
+
 	"github.com/mahakamcloud/netd/appcontext"
 	"github.com/mahakamcloud/netd/config"
+	"github.com/mahakamcloud/netd/server"
 	log "github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 )
 
 func handleInitError() {
@@ -17,4 +21,22 @@ func main() {
 
 	config.Load()
 	appcontext.Init()
+
+	clientApp := cli.NewApp()
+	clientApp.Name = "network-daemon"
+	clientApp.Version = "0.0.1"
+	clientApp.Commands = []cli.Command{
+		{
+			Name:        "start",
+			Description: "Start HTTP api server",
+			Action: func(c *cli.Context) error {
+				server.StartAPIServer()
+				return nil
+			},
+		},
+	}
+	if err := clientApp.Run(os.Args); err != nil {
+		panic(err)
+	}
+
 }

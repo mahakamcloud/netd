@@ -5,6 +5,7 @@ import (
 
 	"github.com/mahakamcloud/netd/appcontext"
 	"github.com/mahakamcloud/netd/config"
+	"github.com/mahakamcloud/netd/netd"
 	"github.com/mahakamcloud/netd/server"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"

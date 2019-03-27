@@ -24,12 +24,7 @@ func Register() {
 		return
 	}
 
-	h, err := host.New(hostName, ip, ipMask)
-	if err != nil {
-		log.Errorf("error initializing host: %v", err)
-		return
-	}
-
+	h := host.New(hostName, ip, ipMask)
 	err = h.Register(&client.Client{})
 	if err != nil {
 		log.Errorf("error registering host to mahakam: %v", err)

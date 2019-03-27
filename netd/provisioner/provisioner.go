@@ -38,8 +38,8 @@ func ProvisionClusterNetwork(cl *cluster.Cluster, localhost *host.Host, remoteho
 	// TODO: make error messages Mahakam way
 	errs := make([]error, 0)
 	for _, r := range remotehosts {
-		greName := generateGRETunnelName(cl.Name, localhost.Name, r.Name)
-		gre := network.NewGRE(greName, r.IPAddr, cl.GREKey)
+		greName := generateGRETunnelName(cl.Name, localhost.Name(), r.Name())
+		gre := network.NewGRE(greName, r.IPAddr(), cl.GREKey)
 		err = gre.Create(bridgeName)
 		if err != nil {
 			errs = append(errs, err)

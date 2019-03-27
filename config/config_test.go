@@ -11,7 +11,10 @@ func Test_ConfigIsLoadedProperly(t *testing.T) {
 		"host":                  "localhost",
 		"app_port":              "3000",
 		"new_relic_enabled":     "false",
+		"mahakam_ip":            "1.2.3.4",
+		"mahakam_port":          "9001",
 		"new_relic_app_name":    "dummy",
+		"host_bridge_name":      "mbr0",
 		"new_relic_license_key": "dummy_license_key",
 	}
 
@@ -30,6 +33,15 @@ func Test_ConfigIsLoadedProperly(t *testing.T) {
 	}
 	if appConfig.host != "localhost" {
 		t.Errorf("Wrong host. Got: %v Want: %v", appConfig.host, "localhost")
+	}
+	if appConfig.hostBridgeName != "mbr0" {
+		t.Errorf("Wrong host bridg name. Got: %v Want: %v", appConfig.hostBridgeName, "mbr0")
+	}
+	if appConfig.mahakamIP != "1.2.3.4" {
+		t.Errorf("Wrong mahakam IP. Got: %v Want: %v", appConfig.mahakamIP, "1.2.3.4")
+	}
+	if appConfig.mahakamPort != 9001 {
+		t.Errorf("Wrong mahakam port. Got: %v Want: %v", appConfig.mahakamPort, 9001)
 	}
 	if appConfig.newRelic.Enabled != false {
 		t.Errorf("Wrong New Relic enabled. Got: %v Want: %v", appConfig.newRelic.Enabled, false)

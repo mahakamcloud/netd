@@ -46,3 +46,11 @@ func (h *Host) Register(c *client.Client) error {
 	}
 	return nil
 }
+
+func (h *Host) Name() string {
+	return h.name
+}
+
+func (h *Host) IPAddr() net.IP {
+	return h.ipAddr
+}

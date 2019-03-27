@@ -27,6 +27,6 @@ localtest: dep ## run tests on local machine
 vagranttest: ## run tests on Vagrant box
 	vagrant up
 
-build: test
+build: dep
 	mkdir -p out/
 	go build -o $(APP_EXECUTABLE)

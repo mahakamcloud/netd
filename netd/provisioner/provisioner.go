@@ -11,9 +11,6 @@ import (
 	"github.com/mahakamcloud/netd/netd/network"
 )
 
-type provisioner struct {
-}
-
 func generateBridgeName(clusterName string) string {
 	var bridgeNamePrefix string
 	if len(clusterName) < 12 {
@@ -29,7 +26,7 @@ func generateGRETunnelName(clusterName, localHostName, remoteHostName string) st
 	return fmt.Sprintf("%s_%s_%s", clusterName, localHostName, remoteHostName)
 }
 
-func (p *provisioner) provisionClusterNetwork(cl *cluster.Cluster, localhost *host.Host, remotehosts []*host.Host) error {
+func ProvisionClusterNetwork(cl *cluster.Cluster, localhost *host.Host, remotehosts []*host.Host) error {
 	bridgeName := generateBridgeName(cl.Name)
 	bridge, err := network.NewBridge(bridgeName)
 	if err != nil {
@@ -57,7 +54,7 @@ func (p *provisioner) provisionClusterNetwork(cl *cluster.Cluster, localhost *ho
 	}
 	// register libvirt network
 
-	err = p.registerLibvirtNetwork(cl.Name, bridge)
+	err = registerLibvirtNetwork(cl.Name, bridge)
 	if err != nil {
 		return err
 	}
@@ -65,7 +62,7 @@ func (p *provisioner) provisionClusterNetwork(cl *cluster.Cluster, localhost *ho
 	return nil
 }
 
-func (p *provisioner) registerLibvirtNetwork(name string, br *network.Bridge) error {
+func registerLibvirtNetwork(name string, br *network.Bridge) error {
 	conn, err := libvirt.NewConnect("qemu:///system") // TODO: system IP
 	if err != nil {
 		return err

@@ -8,10 +8,13 @@ import (
 )
 
 type Config struct {
-	logLevel string
-	host     string
-	port     int
-	newRelic newrelic.Config
+	logLevel       string
+	host           string
+	port           int
+	mahakamIP      string
+	mahakamPort    int
+	hostBridgeName string
+	newRelic       newrelic.Config
 }
 
 var appConfig *Config
@@ -22,16 +25,25 @@ func Load() error {
 		return err
 	}
 
+	mahakamPort, err := strconv.Atoi(os.Getenv("mahakam_port"))
+	if err != nil {
+		return err
+	}
+
 	nrConfig, err := getNewRelicConfigOrPanic()
 	if err != nil {
 		return err
 	}
 
+	// TODO(vjdhama): Do nill check for env vars
 	appConfig = &Config{
-		logLevel: os.Getenv("log_level"),
-		host:     os.Getenv("host"),
-		port:     appPort,
-		newRelic: nrConfig,
+		logLevel:       os.Getenv("log_level"),
+		host:           os.Getenv("host"),
+		port:           appPort,
+		mahakamIP:      os.Getenv("mahakam_ip"),
+		mahakamPort:    mahakamPort,
+		hostBridgeName: os.Getenv("host_bridge_name"),
+		newRelic:       nrConfig,
 	}
 	return nil
 }
@@ -48,6 +60,18 @@ func getNewRelicConfigOrPanic() (newrelic.Config, error) {
 
 func Port() int {
 	return appConfig.port
+}
+
+func MahakamIP() string {
+	return appConfig.mahakamIP
+}
+
+func MahakamPort() int {
+	return appConfig.mahakamPort
+}
+
+func HostBridgeName() string {
+	return appConfig.hostBridgeName
 }
 
 func NewRelic() newrelic.Config {

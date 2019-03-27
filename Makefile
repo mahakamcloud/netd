@@ -25,6 +25,7 @@ localtest: dep ## run tests on local machine
 	go test -v $(shell go list -v ./... | grep -v /vendor/ | grep -v integration | grep -v /playground )
 
 vagranttest: ## run tests on Vagrant box
+	vagrant destroy -f
 	vagrant up
 
 build: dep

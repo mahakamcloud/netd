@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"strconv"
 
 	"github.com/mahakamcloud/netd/client"
 	"github.com/mahakamcloud/netd/config"
@@ -18,14 +17,14 @@ const (
 )
 
 type Host struct {
-	name   string `json:"name"`
-	ipAddr net.IP `json:"ip"`
-	ipMask string `json:"ipMask"`
+	Name       string `json:"name"`
+	IPAddr     net.IP `json:"ip"`
+	IPMaskSize int    `json:"ipmask_size"`
 }
 
 func New(name string, ip net.IP, ipMask net.IPMask) *Host {
 	mask, _ := ipMask.Size()
-	return &Host{name, ip, strconv.Itoa(mask)}
+	return &Host{name, ip, mask}
 }
 
 func (h *Host) Register(c *client.Client) error {
@@ -45,12 +44,4 @@ func (h *Host) Register(c *client.Client) error {
 		return err
 	}
 	return nil
-}
-
-func (h *Host) Name() string {
-	return h.name
-}
-
-func (h *Host) IPAddr() net.IP {
-	return h.ipAddr
 }

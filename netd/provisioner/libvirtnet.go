@@ -4,10 +4,14 @@ import (
 	"encoding/xml"
 )
 
-type bridge struct {
-	Name  string `xml:"name,attr"`
-	Stp   string `xml:"stp,attr"`
-	Delay string `xml:"delay,attr"`
+type networkInterface struct {
+	IfaceType   string        `xml:"type,attr"`
+	Source      networkSource `xml:"source"`
+	Virtualport virtualport   `xml:"virtualport"`
+}
+
+type networkSource struct {
+	BridgeName string `xml:"bridge,attr"`
 }
 
 type virtualport struct {
@@ -15,19 +19,20 @@ type virtualport struct {
 }
 
 type netxml struct {
-	XMLName     xml.Name    `xml:"network"`
-	Name        string      `xml:"name"`
-	Bridge      bridge      `xml:"bridge"`
-	Virtualport virtualport `xml:"virtualport"`
+	XMLName          xml.Name         `xml:"network"`
+	Name             string           `xml:"name"`
+	NetworkInterface networkInterface `xml:"interface"`
 }
 
 func generateNetXML(netName, bridgeName string) (string, error) {
-	b := bridge{bridgeName, "on", "0"}
-	v := virtualport{"openvswitch"}
+	i := networkInterface{
+		IfaceType:   "bridge",
+		Source:      networkSource{bridgeName},
+		Virtualport: virtualport{"openvswitch"},
+	}
 	n := netxml{
-		Name:        netName,
-		Bridge:      b,
-		Virtualport: v,
+		Name:             netName,
+		NetworkInterface: i,
 	}
 
 	output, err := xml.Marshal(n)

@@ -26,68 +26,89 @@ func generateGRETunnelName(clusterName, localHostName, remoteHostName string) st
 	return fmt.Sprintf("%s_%s_%s", clusterName, localHostName, remoteHostName)
 }
 
-func ProvisionClusterNetwork(cl *cluster.Cluster, localhost *host.Host, remotehosts []*host.Host) error {
+func CreateBridge(cl *cluster.Cluster) (*network.Bridge, error) {
 	bridgeName := generateBridgeName(cl.Name)
-	bridge, err := network.NewBridge(bridgeName)
-	if err != nil {
-		return err
-	}
+	return network.NewBridge(bridgeName)
+}
 
-	// create GRE mesh
-	// TODO: do goroutines
-	// TODO: make error messages Mahakam way
+type GREConnection struct {
+	Name       string
+	RemoteHost *host.Host
+	Status     bool
+}
+
+func CreateGREMesh(cl *cluster.Cluster, localhost *host.Host, remotehosts []*host.Host, br *network.Bridge) ([]*GREConnection, error) {
+	greConns := make([]*GREConnection, 0)
 	errs := make([]error, 0)
+
 	for _, r := range remotehosts {
-		greName := generateGRETunnelName(cl.Name, localhost.Name(), r.Name())
-		gre := network.NewGRE(greName, r.IPAddr(), cl.GREKey)
-		err = gre.Create(bridgeName)
+		greName := generateGRETunnelName(cl.Name, localhost.Name, r.Name)
+		gre := network.NewGRE(greName, r.IPAddr, cl.GREKey)
+		err := gre.Create(br.Name())
+
+		greConn := &GREConnection{
+			Name:       gre.Name(),
+			RemoteHost: r,
+			Status:     true,
+		}
 		if err != nil {
 			errs = append(errs, err)
+			greConn.Status = false
 		}
+		greConns = append(greConns, greConn)
 	}
+
 	if len(errs) > 0 {
 		errStrs := make([]string, 0)
 		for _, e := range errs {
 			errStrs = append(errStrs, e.Error())
 		}
-		return errors.New(strings.Join(errStrs, "\n"))
-	}
-	// register libvirt network
-
-	err = registerLibvirtNetwork(cl.Name, bridge)
-	if err != nil {
-		return err
+		return greConns, errors.New(strings.Join(errStrs, "\n"))
 	}
 
-	return nil
+	return greConns, nil
 }
 
-func registerLibvirtNetwork(name string, br *network.Bridge) error {
+type LibvirtNetwork struct {
+	Name       string
+	Started    bool
+	Autostart  bool
+	Persistent bool
+}
+
+func RegisterLibvirtNetwork(cl *cluster.Cluster, br *network.Bridge) (*LibvirtNetwork, error) {
 	conn, err := libvirt.NewConnect("qemu:///system") // TODO: system IP
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer conn.Close()
 
-	xmlString, err := generateNetXML(name, br.Name())
+	xmlString, err := generateNetXML(cl.Name, br.Name())
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	network, err := conn.NetworkDefineXML(xmlString)
 	if err != nil {
-		return err
+		return nil, err
+	}
+
+	l := &LibvirtNetwork{
+		Name:       cl.Name,
+		Persistent: true,
 	}
 
 	err = network.Create()
 	if err != nil {
-		return err
+		return l, err
 	}
+	l.Started = true
 
 	err = network.SetAutostart(true)
 	if err != nil {
-		return err
+		return l, err
 	}
+	l.Autostart = true
 
-	return nil
+	return l, nil
 }

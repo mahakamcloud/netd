@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type gre struct {
+type GRE struct {
 	name      string
 	remoteIP  net.IP
 	key       int
@@ -16,8 +16,8 @@ type gre struct {
 	iplink    *ipLink
 }
 
-func NewGRE(name string, remoteIP net.IP, key int) *gre {
-	return &gre{
+func NewGRE(name string, remoteIP net.IP, key int) *GRE {
+	return &GRE{
 		name:      name,
 		remoteIP:  remoteIP,
 		key:       key,
@@ -26,7 +26,7 @@ func NewGRE(name string, remoteIP net.IP, key int) *gre {
 	}
 }
 
-func (g *gre) Create(bridgeName string) error {
+func (g *GRE) Create(bridgeName string) error {
 	err := g.iplink.createTapDev(g.name)
 	if err != nil {
 		return err
@@ -45,4 +45,8 @@ func (g *gre) Create(bridgeName string) error {
 		Key:      strconv.Itoa(g.key),
 	}
 	return g.ovsClient.VSwitch.Set.Interface(g.name, iFaceOptions)
+}
+
+func (g *GRE) Name() string {
+	return g.name
 }

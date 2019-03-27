@@ -72,6 +72,7 @@ Vagrant.configure("2") do |config|
   
   config.vm.provision "shell", inline: <<-shell
      export GOPATH=/home/vagrant/GOPATH
+     rm -rf /home/vagrant/GOPATH/src/github.com/mahakamcloud/netd
      mkdir -p /home/vagrant/GOPATH/src/github.com/mahakamcloud/netd/
      cp -r /vagrant/* /home/vagrant/GOPATH/src/github.com/mahakamcloud/netd/
      rm -rf /home/vagrant/GOPATH/src/github.com/mahakamcloud/netd/vendor
@@ -80,10 +81,7 @@ Vagrant.configure("2") do |config|
      make localtest
   shell
 
-     #   #   #   config.vm.synced_folder ".", "/home/vagrant/GOPATH/src/github.com/mahakamcloud/netd/"
   config.vm.define "netd-server" do |m1|
-    # m1.vm.network :private_network, ip: "10.10.2.16",
-    #   virtualbox__intnet: true
   end
 end
 

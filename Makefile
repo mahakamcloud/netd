@@ -31,3 +31,7 @@ vagranttest: ## run tests on Vagrant box
 build: dep
 	mkdir -p out/
 	go build -o $(APP_EXECUTABLE)
+
+build-linux: dep
+	mkdir -p out/
+	GOOS=linux go build -o $(APP_EXECUTABLE)

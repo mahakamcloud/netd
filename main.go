@@ -20,7 +20,10 @@ func handleInitError() {
 func main() {
 	defer handleInitError()
 
-	config.Load()
+	err := config.Load()
+	if err != nil {
+		log.Fatalf("error loading config : %s", err)
+	}
 	appcontext.Init()
 
 	clientApp := cli.NewApp()
@@ -40,5 +43,4 @@ func main() {
 	if err := clientApp.Run(os.Args); err != nil {
 		panic(err)
 	}
-
 }

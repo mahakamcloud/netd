@@ -5,8 +5,8 @@ import (
 	"net"
 	"os"
 
-	"github.com/mahakamcloud/netd/client"
 	"github.com/mahakamcloud/netd/config"
+	"github.com/mahakamcloud/netd/mahakamclient"
 	"github.com/mahakamcloud/netd/netd/host"
 	log "github.com/sirupsen/logrus"
 )
@@ -25,11 +25,12 @@ func Register() {
 	}
 
 	h := host.New(hostName, ip, ipMask)
-	err = h.Register(&client.Client{})
+	err = h.Register(&mahakamclient.Client{})
 	if err != nil {
 		log.Errorf("error registering host to mahakam: %v", err)
 		return
 	}
+	log.Infof("Successfully registered host %s with IP %s", h.Name, h.IPAddr.String())
 }
 
 func getBridgeIPNet(bridgeName string) (net.IP, net.IPMask, error) {
@@ -39,8 +40,11 @@ func getBridgeIPNet(bridgeName string) (net.IP, net.IPMask, error) {
 	}
 
 	if addrs, _ := iface.Addrs(); len(addrs) > 0 {
-		ip, ipNet, _ := net.ParseCIDR(addrs[0].String())
-		return ip, ipNet.Mask, nil
+		for _, addr := range addrs {
+			if ipAddr, ipnet, _ := net.ParseCIDR(addr.String()); ipAddr.To4() != nil {
+				return ipAddr, ipnet.Mask, nil
+			}
+		}
 	}
 	return nil, nil, fmt.Errorf("host bridge %q doesn't have IP", bridgeName)
 }

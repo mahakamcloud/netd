@@ -5,43 +5,47 @@ import (
 	"net"
 	"os"
 
-	"github.com/sirupsen/logrus"
+	"github.com/mahakamcloud/netd/client"
+	"github.com/mahakamcloud/netd/config"
+	"github.com/mahakamcloud/netd/netd/host"
+	log "github.com/sirupsen/logrus"
 )
 
-type NetDaemon struct {
-	MahakamAPIServer string
-	HostBridgeName   string
-
-	hostname  string
-	ipaddress net.IP
-
-	Log logrus.FieldLogger
-}
-
-func Run(nd *NetDaemon) {
-	// TODO(giri): Self registration of host
-	_, err := os.Hostname()
+func Register() {
+	hostName, err := os.Hostname()
 	if err != nil {
-		nd.Log.Errorf("error getting hostname: %v", err)
+		log.Errorf("error getting hostname: %v", err)
 		return
 	}
 
-	_, err = getBridgeIpAddr(nd.HostBridgeName)
+	ip, ipMask, err := getBridgeIPNet(config.HostBridgeName())
 	if err != nil {
-		nd.Log.Errorf("error getting host ip address: %v", err)
+		log.Errorf("error getting ip network: %v", err)
+		return
+	}
+
+	h, err := host.New(hostName, ip, ipMask)
+	if err != nil {
+		log.Errorf("error initializing host: %v", err)
+		return
+	}
+
+	err = h.Register(&client.Client{})
+	if err != nil {
+		log.Errorf("error registering host to mahakam: %v", err)
 		return
 	}
 }
 
-func getBridgeIpAddr(bridgeName string) (net.IP, error) {
+func getBridgeIPNet(bridgeName string) (net.IP, net.IPMask, error) {
 	iface, err := net.InterfaceByName(bridgeName)
 	if err != nil {
-		return nil, err
+		return net.IP{}, net.IPMask{}, err
 	}
 
 	if addrs, _ := iface.Addrs(); len(addrs) > 0 {
-		ip, _, _ := net.ParseCIDR(addrs[0].String())
-		return ip, nil
+		ip, ipNet, _ := net.ParseCIDR(addrs[0].String())
+		return ip, ipNet.Mask, nil
 	}
-	return nil, fmt.Errorf("host bridge %q doesn't have IP", bridgeName)
+	return nil, nil, fmt.Errorf("host bridge %q doesn't have IP", bridgeName)
 }

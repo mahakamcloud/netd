@@ -30,6 +30,7 @@ func main() {
 			Name:        "start",
 			Description: "Start HTTP api server",
 			Action: func(c *cli.Context) error {
+				netd.Register()
 				server.StartAPIServer()
 				return nil
 			},

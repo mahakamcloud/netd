@@ -37,14 +37,14 @@ type GREConnection struct {
 	Status     bool
 }
 
-func CreateGREMesh(cl *cluster.Cluster, localhost *host.Host, remotehosts []*host.Host, br *network.Bridge) ([]*GREConnection, error) {
+func CreateGREMesh(cl *cluster.Cluster, localhost *host.Host, remotehosts []*host.Host, bridgeName string) ([]*GREConnection, error) {
 	greConns := make([]*GREConnection, 0)
 	errs := make([]error, 0)
 
 	for _, r := range remotehosts {
 		greName := generateGRETunnelName(cl.Name, localhost.Name, r.Name)
 		gre := network.NewGRE(greName, r.IPAddr, cl.GREKey)
-		err := gre.Create(br.Name())
+		err := gre.Create(bridgeName)
 
 		greConn := &GREConnection{
 			Name:       gre.Name(),
@@ -76,14 +76,14 @@ type LibvirtNetwork struct {
 	Persistent bool
 }
 
-func RegisterLibvirtNetwork(cl *cluster.Cluster, br *network.Bridge) (*LibvirtNetwork, error) {
+func RegisterLibvirtNetwork(cl *cluster.Cluster, bridgeName string) (*LibvirtNetwork, error) {
 	conn, err := libvirt.NewConnect("qemu:///system") // TODO: system IP
 	if err != nil {
 		return nil, err
 	}
 	defer conn.Close()
 
-	xmlString, err := generateNetXML(cl.Name, br.Name())
+	xmlString, err := generateNetXML(cl.Name, bridgeName)
 	if err != nil {
 		return nil, err
 	}

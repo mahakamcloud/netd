@@ -3,3 +3,4 @@ out/
 .vagrant/
 *.log
 *.box
+.DS_Store

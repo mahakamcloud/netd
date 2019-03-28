@@ -34,7 +34,11 @@ func main() {
 			Name:        "start",
 			Description: "Start HTTP api server",
 			Action: func(c *cli.Context) error {
-				netd.Register()
+				if err := netd.Register(); err != nil {
+					log.Errorf("failed host registration: %v", err)
+					return err
+				}
+
 				server.StartAPIServer()
 				return nil
 			},

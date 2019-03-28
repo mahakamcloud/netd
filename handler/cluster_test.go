@@ -58,3 +58,28 @@ func TestShouldReturn400ForInvalidJSON(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
+
+// TestCreateLibvirtNetworkForProvisionerError tests if libvirt network creation fails.
+//
+// One sureshot way of ensuring that libvirt network creation fails is by trying to create the same network
+// twice. That is why this test sends the same request twice.
+// TODO: Find a better way of doing this.
+func TestCreateLibvirtNetworkForProvisionerError(t *testing.T) {
+	cl1 := cluster.New("cl2", 2)
+	h1 := host.New("host3", net.IPv4(10, 10, 10, 3), net.IPv4Mask(255, 255, 255, 0))
+	h2 := host.New("host4", net.IPv4(10, 10, 10, 4), net.IPv4Mask(255, 255, 255, 0))
+	req := createClusterNetworkRequest{cl1, []*host.Host{h1, h2}}
+	reqJSON, _ := json.Marshal(req)
+
+	w1 := httptest.NewRecorder()
+	w2 := httptest.NewRecorder()
+	r1, _ := http.NewRequest("POST", "/v1/cluster/network", bytes.NewBuffer(reqJSON))
+	r2, _ := http.NewRequest("POST", "/v1/cluster/network", bytes.NewBuffer(reqJSON))
+
+	CreateClusterNetworkHandler(w1, r1)
+	CreateClusterNetworkHandler(w2, r2)
+
+	assert.Equal(t, http.StatusMultiStatus, w2.Code)
+	assert.Equal(t, "application/json", w2.Header().Get("Content-Type"))
+	assert.Contains(t, w2.Body.String(), "operation failed: network 'cl2' already exists with uuid")
+}

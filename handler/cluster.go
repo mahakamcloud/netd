@@ -46,29 +46,37 @@ func CreateClusterNetworkHandler(w http.ResponseWriter, r *http.Request) {
 	var req createClusterNetworkRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json")
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println(err)
 		return
 	}
 
 	if req.Cluster == nil || len(req.Hosts) == 0 {
 		w.WriteHeader(http.StatusUnprocessableEntity)
+		fmt.Println(err)
 		return
 	}
 
 	response := &createClusterNetworkResponse{}
-	response.BridgeResp = createBridge(req.Cluster)
 
+	response.BridgeResp = createBridge(req.Cluster)
 	bridgeName := response.BridgeResp.Name
 
 	response.GRETunnelsResp = createGRETunnels(req.Cluster, req.Hosts, bridgeName)
 	response.LibvirtNetResp = createLibvirtNetwork(req.Cluster, bridgeName)
-	response.Status = true
+
+	if !response.LibvirtNetResp.Status {
+		response.Status = false
+		w.WriteHeader(http.StatusMultiStatus)
+	} else {
+		response.Status = true
+		w.WriteHeader(http.StatusCreated)
+	}
 
 	responseJSON, _ := json.Marshal(response)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
 	w.Write(responseJSON)
 }
 
@@ -102,7 +110,10 @@ func createGRETunnels(cl *cluster.Cluster, hosts []*host.Host, bridgeName string
 func createLibvirtNetwork(cl *cluster.Cluster, bridgeName string) *libvirtNetResp {
 	libvirtNet, err := provisioner.RegisterLibvirtNetwork(cl, bridgeName)
 	if err != nil {
-		return nil
+		return &libvirtNetResp{
+			Status: false,
+			Err:    err.Error(),
+		}
 	}
 	return &libvirtNetResp{
 		Name:   libvirtNet.Name,

@@ -28,7 +28,7 @@ func TestCreateClusterNetworkHandler(t *testing.T) {
 	responseJSON, _ := json.Marshal(response)
 
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("POST", "/v1/cluster/network", bytes.NewBuffer(reqJSON))
+	r, _ := http.NewRequest("POST", "/v1/network", bytes.NewBuffer(reqJSON))
 
 	CreateClusterNetworkHandler(w, r)
 
@@ -41,7 +41,7 @@ func TestShouldReturn422ForUnprocessableJSON(t *testing.T) {
 	invalidReqJSON := "{\"foo\":\"bar\"}"
 
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("POST", "/v1/cluster/network", bytes.NewBufferString(invalidReqJSON))
+	r, _ := http.NewRequest("POST", "/v1/network", bytes.NewBufferString(invalidReqJSON))
 
 	CreateClusterNetworkHandler(w, r)
 
@@ -52,7 +52,7 @@ func TestShouldReturn400ForInvalidJSON(t *testing.T) {
 	invalidReqJSON := "{\"foo\":\"bar\""
 
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("POST", "/v1/cluster/network", bytes.NewBufferString(invalidReqJSON))
+	r, _ := http.NewRequest("POST", "/v1/network", bytes.NewBufferString(invalidReqJSON))
 
 	CreateClusterNetworkHandler(w, r)
 
@@ -73,8 +73,8 @@ func TestCreateLibvirtNetworkForProvisionerError(t *testing.T) {
 
 	w1 := httptest.NewRecorder()
 	w2 := httptest.NewRecorder()
-	r1, _ := http.NewRequest("POST", "/v1/cluster/network", bytes.NewBuffer(reqJSON))
-	r2, _ := http.NewRequest("POST", "/v1/cluster/network", bytes.NewBuffer(reqJSON))
+	r1, _ := http.NewRequest("POST", "/v1/network", bytes.NewBuffer(reqJSON))
+	r2, _ := http.NewRequest("POST", "/v1/network", bytes.NewBuffer(reqJSON))
 
 	CreateClusterNetworkHandler(w1, r1)
 	CreateClusterNetworkHandler(w2, r2)

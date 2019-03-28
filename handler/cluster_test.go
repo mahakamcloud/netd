@@ -37,7 +37,7 @@ func TestCreateClusterNetworkHandler(t *testing.T) {
 	assert.Equal(t, string(responseJSON), w.Body.String())
 }
 
-func TestShouldReturn422ForInvalidJSON(t *testing.T) {
+func TestShouldReturn422ForUnprocessableJSON(t *testing.T) {
 	invalidReqJSON := "{\"foo\":\"bar\"}"
 
 	w := httptest.NewRecorder()
@@ -46,4 +46,15 @@ func TestShouldReturn422ForInvalidJSON(t *testing.T) {
 	CreateClusterNetworkHandler(w, r)
 
 	assert.Equal(t, http.StatusUnprocessableEntity, w.Code)
+}
+
+func TestShouldReturn400ForInvalidJSON(t *testing.T) {
+	invalidReqJSON := "{\"foo\":\"bar\""
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("POST", "/v1/cluster/network", bytes.NewBufferString(invalidReqJSON))
+
+	CreateClusterNetworkHandler(w, r)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 }

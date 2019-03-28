@@ -45,11 +45,17 @@ type createClusterNetworkResponse struct {
 func CreateClusterNetworkHandler(w http.ResponseWriter, r *http.Request) {
 	var req createClusterNetworkRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
+	defer r.Body.Close()
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	if req.Cluster == nil || len(req.Hosts) == 0 {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
-	defer r.Body.Close()
 
 	response := &createClusterNetworkResponse{}
 	response.BridgeResp = createBridge(req.Cluster)

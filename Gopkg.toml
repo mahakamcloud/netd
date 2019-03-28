@@ -32,3 +32,7 @@
 [[constraint]]
   name = "github.com/libvirt/libvirt-go"
   version = "5.1.0"
+
+[[constraint]]
+  name = "github.com/stretchr/testify"
+  revision = "34c6fa2dc70986bccbbffcc6130f6920a924b075"

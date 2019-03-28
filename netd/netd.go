@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/mahakamcloud/netd/config"
+	"github.com/mahakamcloud/netd/logger"
 	"github.com/mahakamcloud/netd/mahakamclient"
 	"github.com/mahakamcloud/netd/netd/host"
 	"github.com/mahakamcloud/netd/netd/network"
@@ -29,6 +28,6 @@ func Register() error {
 		return fmt.Errorf("error registering host to mahakam: %v", err)
 	}
 
-	log.Infof("Successfully registered host %s with IP %s", h.Name, h.IPAddr.String())
+	logger.Log.Infof("Successfully registered host %s with IP %s", h.Name, h.IPAddr.String())
 	return nil
 }

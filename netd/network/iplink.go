@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/mahakamcloud/netd/cmdrunner"
-	log "github.com/sirupsen/logrus"
+	"github.com/mahakamcloud/netd/logger"
 )
 
 type ipLink struct {
@@ -24,20 +24,20 @@ func (i *ipLink) createTapDev(name string) error {
 	}
 	output, err := i.runner.CombinedOutput("ip", "tuntap", "add", "dev", name, "mode", "tap")
 	if err != nil {
-		log.Errorf("Error creating tap device %v: %v", name, err)
+		logger.Log.Errorf("Error creating tap device %v: %v", name, err)
 		return err
 	}
-	log.Debugf("Tap device %v created: %v", name, output)
+	logger.Log.Debugf("Tap device %v created: %v", name, output)
 	return nil
 }
 
 func (i *ipLink) tapDevExists(name string) bool {
 	output, err := i.runner.CombinedOutput("ip", "link", "show", "dev", name)
 	if err != nil {
-		log.Debugf("Tap device %v does not exists: %v", name, err)
+		logger.Log.Debugf("Tap device %v does not exists: %v", name, err)
 		return false
 	}
-	log.Debugf("Tap device %v exists: %v", name, output)
+	logger.Log.Debugf("Tap device %v exists: %v", name, output)
 	return true
 }
 

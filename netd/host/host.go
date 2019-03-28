@@ -3,6 +3,7 @@ package host
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net"
 
 	"github.com/mahakamcloud/netd/mahakamclient"
@@ -30,4 +31,8 @@ func (h *Host) Register(c *mahakamclient.Client) error {
 		return err
 	}
 	return nil
+}
+
+func (h *Host) String() string {
+	return fmt.Sprintf("Name: %s IPAddr: %v IPMaskSize: %d", h.Name, h.IPAddr, h.IPMaskSize)
 }

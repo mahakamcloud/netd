@@ -2,6 +2,8 @@ package provisioner
 
 import (
 	"encoding/xml"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type forward struct {
@@ -37,6 +39,7 @@ func generateNetXML(netName, bridgeName string) (string, error) {
 
 	output, err := xml.Marshal(n)
 	if err != nil {
+		log.Error(err)
 		return "", err
 	}
 	return string(output), nil

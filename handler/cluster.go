@@ -2,13 +2,13 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net"
 	"net/http"
 
 	"github.com/mahakamcloud/netd/netd/cluster"
 	"github.com/mahakamcloud/netd/netd/host"
 	"github.com/mahakamcloud/netd/netd/provisioner"
+	log "github.com/sirupsen/logrus"
 )
 
 type createClusterNetworkRequest struct {
@@ -50,13 +50,13 @@ func CreateClusterNetworkHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Println(err)
+		log.Error(err)
 		return
 	}
 
 	if req.Cluster == nil || len(req.Hosts) == 0 {
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		fmt.Println(err)
+		log.Error(err)
 		return
 	}
 
@@ -68,6 +68,7 @@ func CreateClusterNetworkHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		responseJSON, _ := json.Marshal(response)
 		w.Write(responseJSON)
+		log.Debug(string(responseJSON))
 		return
 	}
 
@@ -87,12 +88,16 @@ func CreateClusterNetworkHandler(w http.ResponseWriter, r *http.Request) {
 
 	responseJSON, _ := json.Marshal(response)
 	w.Write(responseJSON)
+	log.Debug(responseJSON)
 }
 
 func createBridge(cl *cluster.Cluster) *bridgeResp {
 	bridge, err := provisioner.CreateBridge(cl)
 	if err != nil {
-		return nil
+		return &bridgeResp{
+			Status: false,
+			Err:    err.Error(),
+		}
 	}
 
 	return &bridgeResp{
@@ -109,12 +114,11 @@ func createGRETunnels(cl *cluster.Cluster, hosts []*host.Host, bridgeName string
 	greConns, errs := provisioner.CreateGREMesh(cl, localhost, hosts, bridgeName)
 	if errs != nil {
 		status = false
-		fmt.Println(errs)
 	}
 
 	greTuRe := make([]*greTunnelResp, 0)
 	for _, g := range greConns {
-		greTuRe = append(greTuRe, &greTunnelResp{g.Name, g.RemoteHost, g.Status, ""})
+		greTuRe = append(greTuRe, &greTunnelResp{g.Name, g.RemoteHost, g.Status, errs.Error()})
 	}
 	return greTuRe, status
 }
@@ -127,6 +131,7 @@ func createLibvirtNetwork(cl *cluster.Cluster, bridgeName string) *libvirtNetRes
 			Err:    err.Error(),
 		}
 	}
+
 	return &libvirtNetResp{
 		Name:   libvirtNet.Name,
 		Status: libvirtNet.Persistent && libvirtNet.Started && libvirtNet.Autostart,

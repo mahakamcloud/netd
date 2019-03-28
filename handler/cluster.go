@@ -44,7 +44,6 @@ type createClusterNetworkResponse struct {
 
 func CreateClusterNetworkHandler(w http.ResponseWriter, r *http.Request) {
 	var req createClusterNetworkRequest
-	//TODO test for invalid json
 	err := json.NewDecoder(r.Body).Decode(&req)
 	fmt.Println(err)
 	defer r.Body.Close()
@@ -83,12 +82,8 @@ func CreateClusterNetworkHandler(w http.ResponseWriter, r *http.Request) {
 
 	response.Status = true
 
-	//	localhost, _ := host.New("local", "10.0.2.15")
-	//	err = provisioner.ProvisionClusterNetwork(req.Cluster, localhost, req.Hosts)
-	//	fmt.Println(err)
+	responseJSON, _ := json.Marshal(response)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	responseJSON, _ := json.Marshal(response)
 	w.Write(responseJSON)
-
 }

@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/mahakamcloud/netd/logger"
 	"github.com/mahakamcloud/netd/netd/cluster"
 	"github.com/mahakamcloud/netd/netd/host"
 	"github.com/mahakamcloud/netd/netd/provisioner"
@@ -50,13 +51,13 @@ func CreateClusterNetworkHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		log.Error(err)
+		logger.Log.Error(err)
 		return
 	}
 
 	if req.Cluster == nil || len(req.Hosts) == 0 {
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		log.Error(err)
+		logger.Log.Error(err)
 		return
 	}
 
@@ -88,7 +89,7 @@ func CreateClusterNetworkHandler(w http.ResponseWriter, r *http.Request) {
 
 	responseJSON, _ := json.Marshal(response)
 	w.Write(responseJSON)
-	log.Debug(responseJSON)
+	logger.Log.Debug(responseJSON)
 }
 
 func createBridge(cl *cluster.Cluster) *bridgeResp {

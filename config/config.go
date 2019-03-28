@@ -58,6 +58,10 @@ func getNewRelicConfigOrPanic() (newrelic.Config, error) {
 	return nrConfig, nil
 }
 
+func LogLevel() string {
+	return appConfig.logLevel
+}
+
 func Port() int {
 	return appConfig.port
 }

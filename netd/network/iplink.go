@@ -1,6 +1,9 @@
 package network
 
 import (
+	"fmt"
+	"net"
+
 	"github.com/mahakamcloud/netd/cmdrunner"
 	log "github.com/sirupsen/logrus"
 )
@@ -40,5 +43,13 @@ func (i *ipLink) tapDevExists(name string) bool {
 
 func (i *ipLink) setIfaceUp(name string) (string, error) {
 	args := []string{"link", "set", "dev", name, "up"}
+	return i.runner.CombinedOutput("ip", args...)
+}
+
+func (i *ipLink) setIfaceIP(name string, ip net.IP, ipMask net.IPMask) (string, error) {
+	size, _ := ipMask.Size()
+	ipCIDR := fmt.Sprintf("%s/%d", ip.String(), size)
+
+	args := []string{"address", "add", ipCIDR, "dev", name}
 	return i.runner.CombinedOutput("ip", args...)
 }

@@ -3,6 +3,7 @@ package network
 import (
 	"errors"
 	"fmt"
+	"net"
 
 	"github.com/digitalocean/go-openvswitch/ovs"
 )
@@ -23,4 +24,20 @@ func NewBridge(name string) (*Bridge, error) {
 
 func (b *Bridge) Name() string {
 	return b.name
+}
+
+func GetBridgeIPNet(bridgeName string) (net.IP, net.IPMask, error) {
+	iface, err := net.InterfaceByName(bridgeName)
+	if err != nil {
+		return net.IP{}, net.IPMask{}, err
+	}
+
+	if addrs, _ := iface.Addrs(); len(addrs) > 0 {
+		for _, addr := range addrs {
+			if ipAddr, ipnet, _ := net.ParseCIDR(addr.String()); ipAddr.To4() != nil {
+				return ipAddr, ipnet.Mask, nil
+			}
+		}
+	}
+	return net.IP{}, net.IPMask{}, fmt.Errorf("Host bridge %q doesn't have IP", bridgeName)
 }

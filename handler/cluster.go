@@ -63,12 +63,21 @@ func CreateClusterNetworkHandler(w http.ResponseWriter, r *http.Request) {
 	response := &createClusterNetworkResponse{}
 
 	response.BridgeResp = createBridge(req.Cluster)
+	if !response.BridgeResp.Status {
+		response.Status = false
+		w.WriteHeader(http.StatusInternalServerError)
+		responseJSON, _ := json.Marshal(response)
+		w.Write(responseJSON)
+		return
+	}
+
 	bridgeName := response.BridgeResp.Name
 
-	response.GRETunnelsResp = createGRETunnels(req.Cluster, req.Hosts, bridgeName)
+	tunnelResp, tunnelStatus := createGRETunnels(req.Cluster, req.Hosts, bridgeName)
+	response.GRETunnelsResp = tunnelResp
 	response.LibvirtNetResp = createLibvirtNetwork(req.Cluster, bridgeName)
 
-	if !response.LibvirtNetResp.Status {
+	if !tunnelStatus || !response.LibvirtNetResp.Status {
 		response.Status = false
 		w.WriteHeader(http.StatusMultiStatus)
 	} else {
@@ -92,11 +101,14 @@ func createBridge(cl *cluster.Cluster) *bridgeResp {
 	}
 }
 
-func createGRETunnels(cl *cluster.Cluster, hosts []*host.Host, bridgeName string) []*greTunnelResp {
+func createGRETunnels(cl *cluster.Cluster, hosts []*host.Host, bridgeName string) ([]*greTunnelResp, bool) {
 	//TODO Get appropriate localhost
 	localhost := host.New("local", net.IPv4(10, 0, 2, 15), net.IPv4Mask(255, 255, 255, 0))
+
+	status := true
 	greConns, errs := provisioner.CreateGREMesh(cl, localhost, hosts, bridgeName)
 	if errs != nil {
+		status = false
 		fmt.Println(errs)
 	}
 
@@ -104,7 +116,7 @@ func createGRETunnels(cl *cluster.Cluster, hosts []*host.Host, bridgeName string
 	for _, g := range greConns {
 		greTuRe = append(greTuRe, &greTunnelResp{g.Name, g.RemoteHost, g.Status, ""})
 	}
-	return greTuRe
+	return greTuRe, status
 }
 
 func createLibvirtNetwork(cl *cluster.Cluster, bridgeName string) *libvirtNetResp {

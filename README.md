@@ -22,7 +22,7 @@ This daemon runs on the bare metal host. Mahakam connects to this daemon to prov
 
 ## How to Run Tests
 
-1. Download the base vagrant box or build one.
+1. Download the base Vagrant box or build one.
 
     To build the base box, run the following commands from `netd` directory:
     

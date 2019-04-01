@@ -24,7 +24,7 @@ This daemon runs on the bare metal host. Mahakam connects to this daemon to prov
 
 1. Download the base vagrant box or build one.
 
-    To build the base box, run the following commands:
+    To build the base box, run the following commands from `netd` directory:
     
     ```
     cd vagrant/base_box
@@ -32,11 +32,12 @@ This daemon runs on the bare metal host. Mahakam connects to this daemon to prov
     vagrant package --output netd.box
     ```
 
-2. Add base vagrant box. 
+2. Add base Vagrant box. 
 
-    Run the following command:
+    To add base Vagrant box, run the following command from `netd` directory:
     
     ```
+    cd vagrant/base_box
     vagrant box add netdbox netd.box
     ```
 

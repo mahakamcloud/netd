@@ -5,9 +5,17 @@ This daemon runs on the bare metal host. Mahakam connects to this daemon to prov
 
 ## Dev Setup
 
-  * Ensure Golang and [go-dep](https://github.com/golang/dep) is installed.
-  * Download all the dependencies by running `make dep`.
-  * Build the project by running `make build`.
+1. Ensure Golang and [go-dep](https://github.com/golang/dep) is installed.
+2. Ensure libvirt installed.
+
+    In MacOS, you can install it with brew:
+
+    ```
+    brew install libvirt
+    ```
+
+3. Download all the dependencies by running `make dep`.
+4. Build the project by running `make build`.
 
 ### How to run tests
 

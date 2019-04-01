@@ -1,4 +1,7 @@
 # netd
+
+## Description
+
 Mahakam Network Daemon
 
 This daemon runs on the bare metal host. Mahakam connects to this daemon to provision cluster network.
@@ -17,9 +20,24 @@ This daemon runs on the bare metal host. Mahakam connects to this daemon to prov
 3. Download all the dependencies by running `make dep`.
 4. Build the project by running `make build`.
 
-### How to run tests
+## How to Run Tests
 
-  * Download the base vagrant box or build one. To build the base box, use the Vagrantfile present in [vagrant/base_box](vagrant/base_box) dir.
-  * Add base vagrant box using the command `vagrant box add netdbox netd.box`
-  * Run `make vagranttest`.
+1. Download the base vagrant box or build one.
 
+    To build the base box, run the following commands:
+    
+    ```
+    cd vagrant/base_box
+    vagrant up
+    vagrant package --output netd.box
+    ```
+
+2. Add base vagrant box. 
+
+    Run the following command:
+    
+    ```
+    vagrant box add netdbox netd.box
+    ```
+
+3. Run `make vagranttest`.

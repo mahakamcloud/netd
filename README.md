@@ -1,4 +1,5 @@
 # netd
+[![Build Status](https://circleci.com/gh/mahakamcloud/netd.svg?style=shield)](https://circleci.com/gh/mahakamcloud/netd)
 
 ## Description
 

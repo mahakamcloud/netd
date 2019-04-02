@@ -5,6 +5,7 @@ import (
 
 	"github.com/mahakamcloud/netd/appcontext"
 	"github.com/mahakamcloud/netd/config"
+	"github.com/mahakamcloud/netd/logger"
 	"github.com/mahakamcloud/netd/netd"
 	"github.com/mahakamcloud/netd/server"
 	log "github.com/sirupsen/logrus"
@@ -24,6 +25,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("error loading config : %s", err)
 	}
+	logger.SetupLogger() 
 	appcontext.Init()
 
 	clientApp := cli.NewApp()

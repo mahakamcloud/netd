@@ -5,10 +5,19 @@ import (
 	"net"
 	"testing"
 
+	"github.com/mahakamcloud/netd/config"
+	"github.com/mahakamcloud/netd/logger"
 	"github.com/stretchr/testify/assert"
 )
 
+func setup() {
+	config.Load()
+	logger.SetupLogger()
+}
+
 func TestGetBridgeIPNetHasIP(t *testing.T) {
+	setup()
+
 	b, _ := NewBridge("fake-br")
 	i := NewIPLink()
 	ip, ipnet, _ := net.ParseCIDR("1.2.3.4/24")
@@ -22,6 +31,8 @@ func TestGetBridgeIPNetHasIP(t *testing.T) {
 }
 
 func TestGetBridgeIPNetBridgeDoesnotExist(t *testing.T) {
+	setup()
+
 	brIP, brIPMask, err := GetBridgeIPNet("fake-bar-br")
 	assert.Equal(t, net.IP{}, brIP)
 	assert.Equal(t, net.IPMask{}, brIPMask)
@@ -29,6 +40,8 @@ func TestGetBridgeIPNetBridgeDoesnotExist(t *testing.T) {
 }
 
 func TestGetBridgeIPNetHasNoIP(t *testing.T) {
+	setup()
+
 	b, _ := NewBridge("fake-foo-br")
 
 	brIP, brIPMask, err := GetBridgeIPNet(b.Name())

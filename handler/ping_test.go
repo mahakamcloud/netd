@@ -9,6 +9,8 @@ import (
 )
 
 func TestPingHandler(t *testing.T) {
+	setup()
+
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "/ping", nil)
 

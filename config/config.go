@@ -59,6 +59,9 @@ func getNewRelicConfigOrPanic() (newrelic.Config, error) {
 }
 
 func LogLevel() string {
+	if appConfig == nil || len(appConfig.logLevel) == 0 {
+		return "INFO"
+	}
 	return appConfig.logLevel
 }
 

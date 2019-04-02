@@ -25,7 +25,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("error loading config : %s", err)
 	}
-	logger.SetupLogger() 
+	logger.SetupLogger()
 	appcontext.Init()
 
 	clientApp := cli.NewApp()

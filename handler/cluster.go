@@ -112,14 +112,22 @@ func createGRETunnels(cl *cluster.Cluster, hosts []*host.Host, bridgeName string
 	localhost := host.New("local", net.IPv4(10, 0, 2, 15), net.IPv4Mask(255, 255, 255, 0))
 
 	status := true
-	greConns, errs := provisioner.CreateGREMesh(cl, localhost, hosts, bridgeName)
-	if errs != nil {
+	greConns, err := provisioner.CreateGREMesh(cl, localhost, hosts, bridgeName)
+	if err != nil {
 		status = false
 	}
 
 	greTuRe := make([]*greTunnelResp, 0)
 	for _, g := range greConns {
-		greTuRe = append(greTuRe, &greTunnelResp{g.Name, g.RemoteHost, g.Status, errs.Error()})
+		r := &greTunnelResp{
+			Name:   g.Name,
+			Host:   g.RemoteHost,
+			Status: g.Status,
+		}
+		if err != nil {
+			r.Err = err.Error()
+		}
+		greTuRe = append(greTuRe, r)
 	}
 	return greTuRe, status
 }

@@ -8,12 +8,21 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/mahakamcloud/netd/config"
+	"github.com/mahakamcloud/netd/logger"
 	"github.com/mahakamcloud/netd/netd/cluster"
 	"github.com/mahakamcloud/netd/netd/host"
 	"github.com/stretchr/testify/assert"
 )
 
+func setup() {
+	config.Load()
+	logger.SetupLogger()
+}
+
 func TestCreateClusterNetworkHandler(t *testing.T) {
+	setup()
+
 	cl1 := cluster.New("cl1", 1)
 	h1 := host.New("host1", net.IPv4(10, 10, 10, 1), net.IPv4Mask(255, 255, 255, 0))
 	h2 := host.New("host2", net.IPv4(10, 10, 10, 2), net.IPv4Mask(255, 255, 255, 0))
@@ -38,6 +47,8 @@ func TestCreateClusterNetworkHandler(t *testing.T) {
 }
 
 func TestShouldReturn422ForUnprocessableJSON(t *testing.T) {
+	setup()
+
 	invalidReqJSON := "{\"foo\":\"bar\"}"
 
 	w := httptest.NewRecorder()
@@ -49,6 +60,8 @@ func TestShouldReturn422ForUnprocessableJSON(t *testing.T) {
 }
 
 func TestShouldReturn400ForInvalidJSON(t *testing.T) {
+	setup()
+
 	invalidReqJSON := "{\"foo\":\"bar\""
 
 	w := httptest.NewRecorder()
@@ -65,6 +78,8 @@ func TestShouldReturn400ForInvalidJSON(t *testing.T) {
 // twice. That is why this test sends the same request twice.
 // TODO: Find a better way of doing this.
 func TestCreateLibvirtNetworkForProvisionerError(t *testing.T) {
+	setup()
+
 	cl1 := cluster.New("cl2", 2)
 	h1 := host.New("host3", net.IPv4(10, 10, 10, 3), net.IPv4Mask(255, 255, 255, 0))
 	h2 := host.New("host4", net.IPv4(10, 10, 10, 4), net.IPv4Mask(255, 255, 255, 0))

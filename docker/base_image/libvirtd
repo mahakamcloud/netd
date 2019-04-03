@@ -1,0 +1,1 @@
+libvirtd_opts="-l -f /etc/libvirt/libvirtd.conf"

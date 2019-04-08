@@ -43,7 +43,7 @@ func CreateGREMesh(cl *cluster.Cluster, localhost *host.Host, remotehosts []*hos
 
 	for _, r := range remotehosts {
 		greName := generateGRETunnelName(cl.Name, localhost.Name, r.Name)
-		gre := network.NewGRE(greName, r.IPAddr, cl.GREKey)
+		gre := network.NewGRE(greName, localhost.IPAddr, r.IPAddr, cl.GREKey)
 		err := gre.Create(bridgeName)
 
 		greConn := &GREConnection{

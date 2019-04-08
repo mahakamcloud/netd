@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-
-	"github.com/digitalocean/go-openvswitch/ovs"
 )
 
 type Bridge struct {
@@ -14,8 +12,8 @@ type Bridge struct {
 
 func NewBridge(name string) (*Bridge, error) {
 	b := &Bridge{name}
-	o := ovs.New()
-	err := o.VSwitch.AddBridge(name)
+	iplink := NewIPLink()
+	err := iplink.createBridge(name)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Error creating a new bridge %v: %v", name, err))
 	}

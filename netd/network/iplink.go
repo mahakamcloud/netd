@@ -3,6 +3,7 @@ package network
 import (
 	"fmt"
 	"net"
+	"strconv"
 
 	"github.com/mahakamcloud/netd/cmdrunner"
 	"github.com/mahakamcloud/netd/logger"
@@ -18,8 +19,21 @@ func NewIPLink() *ipLink {
 	}
 }
 
+func (i *ipLink) createBridge(name string) error {
+	if i.ifaceExists(name) {
+		return nil
+	}
+	output, err := i.runner.CombinedOutput("ip", "link", "add", "name", name, "type", "bridge")
+	if err != nil {
+		logger.Log.Errorf("Error creating bridge %v: %v", name, err)
+		return err
+	}
+	logger.Log.Debugf("Bridge %v created: %v", name, output)
+	return nil
+}
+
 func (i *ipLink) createTapDev(name string) error {
-	if i.tapDevExists(name) {
+	if i.ifaceExists(name) {
 		return nil
 	}
 	output, err := i.runner.CombinedOutput("ip", "tuntap", "add", "dev", name, "mode", "tap")
@@ -31,13 +45,36 @@ func (i *ipLink) createTapDev(name string) error {
 	return nil
 }
 
-func (i *ipLink) tapDevExists(name string) bool {
+func (i *ipLink) createGRETapDev(name string, localIP, remoteIP net.IP, key int) error {
+	if i.ifaceExists(name) {
+		return nil
+	}
+	output, err := i.runner.CombinedOutput("ip", "link", "add", name, "type", "gretap", "remote", remoteIP.String(), "local", localIP.String(), "key", strconv.Itoa(key))
+	if err != nil {
+		logger.Log.Errorf("Error creating GRE tap device %v: %v", name, err)
+		return err
+	}
+	logger.Log.Debugf("GRE tap device %v created: %v", name, output)
+	return nil
+}
+
+func (i *ipLink) addIfaceToBridge(ifaceName, brName string) error {
+	output, err := i.runner.CombinedOutput("ip", "link", "set", "dev", ifaceName, "master", brName)
+	if err != nil {
+		logger.Log.Errorf("Error adding interface %s to bridge %s: %v", ifaceName, brName, err)
+		return err
+	}
+	logger.Log.Debugf("Interface %s added to bridge %s: %v", ifaceName, brName, output)
+	return nil
+}
+
+func (i *ipLink) ifaceExists(name string) bool {
 	output, err := i.runner.CombinedOutput("ip", "link", "show", "dev", name)
 	if err != nil {
-		logger.Log.Debugf("Tap device %v does not exists: %v", name, err)
+		logger.Log.Debugf("Interface %v does not exists: %v", name, err)
 		return false
 	}
-	logger.Log.Debugf("Tap device %v exists: %v", name, output)
+	logger.Log.Debugf("Interface %v exists: %v", name, output)
 	return true
 }
 

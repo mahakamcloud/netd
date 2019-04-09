@@ -11,15 +11,15 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y qemu-utils libvirt-bin libvirt-dev libguestfs-tools python3-lxml python3-libvirt virtinst
 
-            echo 'libvirtd_opts="-l -f /etc/libvirt/libvirtd.conf"' >> /etc/default/libvirtd
+            echo 'libvirtd_opts="-l -f /etc/libvirt/libvirtd.conf"' | sudo tee -a /etc/default/libvirtd
 
-            cat <<EOL >> /etc/libvirt/libvirtd.conf
+            sudo bash -c 'cat <<EOL >> /etc/libvirt/libvirtd.conf
             listen_tls = 0
             listen_tcp = 1
             auth_tcp = "none"
-            EOL
+            EOL'
 
-            systemctl restart libvirtd.service
+            sudo systemctl restart libvirtd.service
       - run: 
           name: Run unit tests
           command: |

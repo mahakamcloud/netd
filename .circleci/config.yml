@@ -1,13 +1,14 @@
 version: 2
 jobs:
   build:
+    machine: true
+      image: ubuntu-1604:201903-01
     working_directory: /go/src/github.com/mahakamcloud/netd
-    docker:
-      - image: mahakamcloud/builder:20190219
     steps:
       - checkout
-
-      - run:
+      - run: 
           name: Run unit tests
-          command: make localtest
+          command: |
+            docker run --user root --privileged --net host -v /var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock -v $PWD:/go/src/github.com/mahakamcloud/netd -w /go/src/github.com/mahakamcloud/netd mahakamcloud/maha-cross:v0.1.0-3 \
+              yum install libvirt-devel gcc -y && make localtest
           no_output_timeout: 30m

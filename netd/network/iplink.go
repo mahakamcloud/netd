@@ -83,7 +83,7 @@ func (i *ipLink) setIfaceUp(name string) (string, error) {
 	return i.runner.CombinedOutput("ip", args...)
 }
 
-func (i *ipLink) setIfaceIP(name string, ip net.IP, ipMask net.IPMask) (string, error) {
+func (i *ipLink) SetIfaceIP(name string, ip net.IP, ipMask net.IPMask) (string, error) {
 	size, _ := ipMask.Size()
 	ipCIDR := fmt.Sprintf("%s/%d", ip.String(), size)
 

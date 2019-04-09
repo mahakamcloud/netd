@@ -22,7 +22,7 @@ func TestGetBridgeIPNetHasIP(t *testing.T) {
 	i := NewIPLink()
 	ip, ipnet, _ := net.ParseCIDR("1.2.3.4/24")
 
-	i.setIfaceIP(b.Name(), ip, ipnet.Mask)
+	i.SetIfaceIP(b.Name(), ip, ipnet.Mask)
 
 	brIP, brIPMask, err := GetBridgeIPNet(b.Name())
 	assert.Equal(t, ip, brIP)

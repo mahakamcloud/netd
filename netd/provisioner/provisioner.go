@@ -71,12 +71,13 @@ func CreateGREMesh(cl *cluster.Cluster, localhost *host.Host, remotehosts []*hos
 
 type LibvirtNetwork struct {
 	Name       string
+	BridgeName string
 	Started    bool
 	Autostart  bool
 	Persistent bool
 }
 
-func RegisterLibvirtNetwork(cl *cluster.Cluster, bridgeName string) (*LibvirtNetwork, error) {
+func registerLibvirtNetwork(cl *cluster.Cluster, bridgeName string) (*LibvirtNetwork, error) {
 	conn, err := libvirt.NewConnect("qemu:///system") // TODO: system IP
 	if err != nil {
 		return nil, err
@@ -95,6 +96,7 @@ func RegisterLibvirtNetwork(cl *cluster.Cluster, bridgeName string) (*LibvirtNet
 
 	l := &LibvirtNetwork{
 		Name:       cl.Name,
+		BridgeName: bridgeName,
 		Persistent: true,
 	}
 
@@ -111,4 +113,9 @@ func RegisterLibvirtNetwork(cl *cluster.Cluster, bridgeName string) (*LibvirtNet
 	l.Autostart = true
 
 	return l, nil
+}
+
+func CreateBridgeWithLibvirtNetwork(cl *cluster.Cluster) (*LibvirtNetwork, error) {
+	bridgeName := generateBridgeName(cl.Name)
+	return registerLibvirtNetwork(cl, bridgeName)
 }

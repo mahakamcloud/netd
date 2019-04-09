@@ -8,8 +8,8 @@ jobs:
       - run: 
           name: Install and configure host dependencies
           command: |
-            apt-get update
-            apt-get install -y qemu-utils libvirt-bin libvirt-clients libvirt-dev libguestfs-tools python3-lxml python3-libvirt virtins
+            sudo apt-get update
+            sudo apt-get install -y qemu-utils libvirt-bin libvirt-clients libvirt-dev libguestfs-tools python3-lxml python3-libvirt virtins
 
             echo 'libvirtd_opts="-l -f /etc/libvirt/libvirtd.conf"' >> /etc/default/libvirtd
 

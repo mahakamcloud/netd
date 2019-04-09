@@ -2,12 +2,13 @@ package handler
 
 import (
 	"encoding/json"
-	"net"
 	"net/http"
 
+	"github.com/mahakamcloud/netd/config"
 	"github.com/mahakamcloud/netd/logger"
 	"github.com/mahakamcloud/netd/netd/cluster"
 	"github.com/mahakamcloud/netd/netd/host"
+	"github.com/mahakamcloud/netd/netd/network"
 	"github.com/mahakamcloud/netd/netd/provisioner"
 	log "github.com/sirupsen/logrus"
 )
@@ -17,10 +18,11 @@ type createClusterNetworkRequest struct {
 	Hosts   []*host.Host     `json:"hosts"`
 }
 
-type bridgeResp struct {
-	Name   string `json:"name"`
-	Status bool   `json:"status"`
-	Err    string `json:"error"`
+type libvirtNetResp struct {
+	Name       string `json:"name"`
+	BridgeName string `json:"br_name"`
+	Status     bool   `json:"status"`
+	Err        string `json:"error"`
 }
 
 type greTunnelResp struct {
@@ -30,17 +32,10 @@ type greTunnelResp struct {
 	Err    string     `json:"error"`
 }
 
-type libvirtNetResp struct {
-	Name   string `json:"name"`
-	Status bool   `json:"status"`
-	Err    string `json:"error"`
-}
-
 type createClusterNetworkResponse struct {
 	Status         bool             `json:"status"`
-	BridgeResp     *bridgeResp      `json:"bridge"`
-	GRETunnelsResp []*greTunnelResp `json:"gre_tunnels"`
 	LibvirtNetResp *libvirtNetResp  `json:"libvirtnet"`
+	GRETunnelsResp []*greTunnelResp `json:"gre_tunnels"`
 }
 
 func CreateClusterNetworkHandler(w http.ResponseWriter, r *http.Request) {
@@ -63,8 +58,8 @@ func CreateClusterNetworkHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := &createClusterNetworkResponse{}
 
-	response.BridgeResp = createBridge(req.Cluster)
-	if !response.BridgeResp.Status {
+	response.LibvirtNetResp = createBridgeWithLibvirtNetwork(req.Cluster)
+	if !response.LibvirtNetResp.Status {
 		response.Status = false
 		w.WriteHeader(http.StatusInternalServerError)
 		responseJSON, _ := json.Marshal(response)
@@ -73,11 +68,19 @@ func CreateClusterNetworkHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bridgeName := response.BridgeResp.Name
+	bridgeName := response.LibvirtNetResp.BridgeName
 
-	tunnelResp, tunnelStatus := createGRETunnels(req.Cluster, req.Hosts, bridgeName)
+	localIP, localIPMask, err := network.GetBridgeIPNet(config.HostBridgeName())
+	if err != nil {
+		response.Status = false
+		w.WriteHeader(http.StatusInternalServerError)
+		logger.Log.Error(err)
+		return
+	}
+
+	localhost := host.New("local", localIP, localIPMask)
+	tunnelResp, tunnelStatus := createGRETunnels(req.Cluster, localhost, req.Hosts, bridgeName)
 	response.GRETunnelsResp = tunnelResp
-	response.LibvirtNetResp = createLibvirtNetwork(req.Cluster, bridgeName)
 
 	if !tunnelStatus || !response.LibvirtNetResp.Status {
 		response.Status = false
@@ -92,32 +95,30 @@ func CreateClusterNetworkHandler(w http.ResponseWriter, r *http.Request) {
 	logger.Log.Debug(responseJSON)
 }
 
-func createBridge(cl *cluster.Cluster) *bridgeResp {
-	bridge, err := provisioner.CreateBridge(cl)
+func createBridgeWithLibvirtNetwork(cl *cluster.Cluster) *libvirtNetResp {
+	libvirtnet, err := provisioner.CreateBridgeWithLibvirtNetwork(cl)
 	if err != nil {
-		return &bridgeResp{
+		return &libvirtNetResp{
 			Status: false,
 			Err:    err.Error(),
 		}
 	}
 
-	return &bridgeResp{
-		Name:   bridge.Name(),
-		Status: true,
+	return &libvirtNetResp{
+		Name:       libvirtnet.Name,
+		BridgeName: libvirtnet.BridgeName,
+		Status:     libvirtnet.Persistent && libvirtnet.Started && libvirtnet.Autostart,
 	}
 }
 
-func createGRETunnels(cl *cluster.Cluster, hosts []*host.Host, bridgeName string) ([]*greTunnelResp, bool) {
-	//TODO Get appropriate localhost
-	localhost := host.New("local", net.IPv4(10, 0, 2, 15), net.IPv4Mask(255, 255, 255, 0))
-
+func createGRETunnels(cl *cluster.Cluster, localhost *host.Host, hosts []*host.Host, bridgeName string) ([]*greTunnelResp, bool) {
 	status := true
 	greConns, err := provisioner.CreateGREMesh(cl, localhost, hosts, bridgeName)
 	if err != nil {
 		status = false
 	}
 
-	greTuRe := make([]*greTunnelResp, 0)
+	greTunResp := make([]*greTunnelResp, 0)
 	for _, g := range greConns {
 		r := &greTunnelResp{
 			Name:   g.Name,
@@ -127,22 +128,7 @@ func createGRETunnels(cl *cluster.Cluster, hosts []*host.Host, bridgeName string
 		if err != nil {
 			r.Err = err.Error()
 		}
-		greTuRe = append(greTuRe, r)
+		greTunResp = append(greTunResp, r)
 	}
-	return greTuRe, status
-}
-
-func createLibvirtNetwork(cl *cluster.Cluster, bridgeName string) *libvirtNetResp {
-	libvirtNet, err := provisioner.RegisterLibvirtNetwork(cl, bridgeName)
-	if err != nil {
-		return &libvirtNetResp{
-			Status: false,
-			Err:    err.Error(),
-		}
-	}
-
-	return &libvirtNetResp{
-		Name:   libvirtNet.Name,
-		Status: libvirtNet.Persistent && libvirtNet.Started && libvirtNet.Autostart,
-	}
+	return greTunResp, status
 }

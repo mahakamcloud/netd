@@ -6,18 +6,46 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/mahakamcloud/netd/config"
 	"github.com/mahakamcloud/netd/logger"
 	"github.com/mahakamcloud/netd/netd/cluster"
 	"github.com/mahakamcloud/netd/netd/host"
+	"github.com/mahakamcloud/netd/netd/network"
 	"github.com/stretchr/testify/assert"
 )
 
+func setupFakeConfig() {
+	os.Setenv("app_port", "0")
+	os.Setenv("mahakam_port", "0")
+	os.Setenv("host_bridge_name", "mbr0")
+	os.Setenv("new_relic_enabled", "false")
+}
+
+func cleanupFakeConfig() {
+	os.Unsetenv("app_port")
+	os.Unsetenv("mahakam_port")
+	os.Unsetenv("host_bridge_name")
+	os.Unsetenv("new_relic_enabled")
+}
+
+func setupHostBridge() {
+	b, _ := network.NewBridge("mbr0")
+	i := network.NewIPLink()
+	ip, ipnet, _ := net.ParseCIDR("1.2.3.4/24")
+
+	i.SetIfaceIP(b.Name(), ip, ipnet.Mask)
+}
+
 func setup() {
-	config.Load()
+	setupFakeConfig()
+	defer cleanupFakeConfig()
+
 	logger.SetupLogger()
+	config.Load()
+	setupHostBridge()
 }
 
 func TestCreateClusterNetworkHandler(t *testing.T) {
@@ -29,11 +57,10 @@ func TestCreateClusterNetworkHandler(t *testing.T) {
 	req := createClusterNetworkRequest{cl1, []*host.Host{h1, h2}}
 	reqJSON, _ := json.Marshal(req)
 
-	b := &bridgeResp{"cl1_br", true, ""}
 	g1 := &greTunnelResp{"cl1_local_host1", h1, true, ""}
 	g2 := &greTunnelResp{"cl1_local_host2", h2, true, ""}
-	l := &libvirtNetResp{"cl1", true, ""}
-	response := &createClusterNetworkResponse{true, b, []*greTunnelResp{g1, g2}, l}
+	l := &libvirtNetResp{"cl1", "cl1_br", true, ""}
+	response := &createClusterNetworkResponse{true, l, []*greTunnelResp{g1, g2}}
 	responseJSON, _ := json.Marshal(response)
 
 	w := httptest.NewRecorder()
@@ -72,12 +99,13 @@ func TestShouldReturn400ForInvalidJSON(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
 
-// TestCreateLibvirtNetworkForProvisionerError tests if libvirt network creation fails.
+// TestCreateBridgeWithLibvirtNetworkForProvisionerError tests if libvirt network creation fails, which
+// also means bridge creation fails.
 //
 // One sureshot way of ensuring that libvirt network creation fails is by trying to create the same network
-// twice. That is why this test sends the same request twice.
+// twice. That is why this test sends the same request twice. Libvirt network
 // TODO: Find a better way of doing this.
-func TestCreateLibvirtNetworkForProvisionerError(t *testing.T) {
+func TestCreateBridgeWithLibvirtNetworkForProvisionerError(t *testing.T) {
 	setup()
 
 	cl1 := cluster.New("cl2", 2)
@@ -94,7 +122,7 @@ func TestCreateLibvirtNetworkForProvisionerError(t *testing.T) {
 	CreateClusterNetworkHandler(w1, r1)
 	CreateClusterNetworkHandler(w2, r2)
 
-	assert.Equal(t, http.StatusMultiStatus, w2.Code)
+	assert.Equal(t, http.StatusInternalServerError, w2.Code)
 	assert.Equal(t, "application/json", w2.Header().Get("Content-Type"))
 	assert.Contains(t, w2.Body.String(), "operation failed: network 'cl2' already exists with uuid")
 }

@@ -6,35 +6,23 @@ import (
 	"github.com/mahakamcloud/netd/logger"
 )
 
-type forward struct {
-	Mode string `xml:"mode,attr"`
-}
-
 type bridge struct {
-	Name string `xml:"name,attr"`
-}
-
-type virtualport struct {
-	PortType string `xml:"type,attr"`
+	Name  string `xml:"name,attr"`
+	STP   string `xml:"stp,attr"`
+	Delay string `xml:"delay,attr"`
 }
 
 type netxml struct {
-	XMLName     xml.Name    `xml:"network"`
-	Name        string      `xml:"name"`
-	Forward     forward     `xml:"forward"`
-	Bridge      bridge      `xml:"bridge"`
-	Virtualport virtualport `xml:"virtualport"`
+	XMLName xml.Name `xml:"network"`
+	Name    string   `xml:"name"`
+	Bridge  bridge   `xml:"bridge"`
 }
 
 func generateNetXML(netName, bridgeName string) (string, error) {
-	f := forward{"bridge"}
-	b := bridge{bridgeName}
-	v := virtualport{"openvswitch"}
+	b := bridge{bridgeName, "on", "0"}
 	n := netxml{
-		Name:        netName,
-		Forward:     f,
-		Bridge:      b,
-		Virtualport: v,
+		Name:   netName,
+		Bridge: b,
 	}
 
 	output, err := xml.Marshal(n)

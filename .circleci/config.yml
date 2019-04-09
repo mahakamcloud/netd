@@ -6,6 +6,21 @@ jobs:
     steps:
       - checkout
       - run: 
+          name: Install and configure host dependencies
+          command: |
+            apt-get update
+            apt-get install -y qemu-utils libvirt-bin libvirt-clients libvirt-dev libguestfs-tools python3-lxml python3-libvirt virtins
+
+            echo 'libvirtd_opts="-l -f /etc/libvirt/libvirtd.conf"' >> /etc/default/libvirtd
+
+            cat <<EOL >> /etc/libvirt/libvirtd.conf
+            listen_tls = 0
+            listen_tcp = 1
+            auth_tcp = "none"
+            EOL
+
+            systemctl restart libvirtd.service
+      - run: 
           name: Run unit tests
           command: |
             docker run --user root --privileged --net host -v /var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock -v $PWD:/go/src/github.com/mahakamcloud/netd -w /go/src/github.com/mahakamcloud/netd mahakamcloud/maha-cross:v0.1.0-3 \

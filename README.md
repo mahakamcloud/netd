@@ -1,5 +1,7 @@
 # netd
 [![Build Status](https://circleci.com/gh/mahakamcloud/netd.svg?style=shield)](https://circleci.com/gh/mahakamcloud/netd)
+[![goreport](https://goreportcard.com/badge/github.com/mahakamcloud/netd)](https://goreportcard.com/report/github.com/mahakamcloud/netd)
+[![codecov](https://codecov.io/gh/mahakamcloud/netd/branch/master/graph/badge.svg)](https://codecov.io/gh/mahakamcloud/netd)
 
 ## Description
 

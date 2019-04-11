@@ -23,6 +23,13 @@ jobs:
       - run: 
           name: Run unit tests
           command: |
-            docker run --user root --privileged --net host -v /var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock -v $PWD:/go/src/github.com/mahakamcloud/netd -w /go/src/github.com/mahakamcloud/netd mahakamcloud/maha-cross:v0.1.0-3 \
-              bash -c 'yum install libvirt-devel gcc -y && make localtest'
+            docker run \
+              --user root \
+              --privileged \
+              --net host \
+              -v /var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock \
+              -v $PWD:/go/src/github.com/mahakamcloud/netd \
+              -w /go/src/github.com/mahakamcloud/netd \
+              mahakamcloud/maha-cross:v0.1.0-3 \
+              bash -c 'yum install libvirt-devel gcc -y && ./hack/test.sh && bash <(curl -s https://codecov.io/bash)'
           no_output_timeout: 30m

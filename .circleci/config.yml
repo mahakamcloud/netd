@@ -32,6 +32,7 @@ jobs:
               -v $PWD:/go/src/github.com/mahakamcloud/netd \
               -w /go/src/github.com/mahakamcloud/netd \
               -e GOCOVMODE=atomic \
+              -e CODECOV_TOKEN=$CODECOV_TOKEN \
               mahakamcloud/maha-cross:v0.1.0-3 \
               bash -c 'yum install libvirt-devel gcc -y && dep ensure -v && go get -u github.com/axw/gocov/gocov && go get -u gopkg.in/matm/v1/gocov-html && ./hack/test.sh && bash <(curl -s https://codecov.io/bash)'
           no_output_timeout: 30m

@@ -20,9 +20,10 @@ jobs:
             EOL'
 
             sudo systemctl restart libvirtd.service
-      - run: 
+      - run:
           name: Run unit tests
           command: |
+            # TODO(giri): need to build new image that has remaining deps
             docker run \
               --user root \
               --privileged \
@@ -30,6 +31,7 @@ jobs:
               -v /var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock \
               -v $PWD:/go/src/github.com/mahakamcloud/netd \
               -w /go/src/github.com/mahakamcloud/netd \
+              -e GOCOVMODE=atomic \
               mahakamcloud/maha-cross:v0.1.0-3 \
-              bash -c 'yum install libvirt-devel gcc -y && dep ensure -v && ./hack/test.sh && bash <(curl -s https://codecov.io/bash)'
+              bash -c 'yum install libvirt-devel gcc -y && dep ensure -v && go get -u github.com/axw/gocov/gocov && go get -u gopkg.in/matm/v1/gocov-html && ./hack/test.sh && bash <(curl -s https://codecov.io/bash)'
           no_output_timeout: 30m

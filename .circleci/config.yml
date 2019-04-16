@@ -44,13 +44,15 @@ jobs:
       - run:
           name: 'Install dependencies'
           command: |
+            sudo apt-get update
+            sudo apt-get install -y qemu-utils libvirt-bin libvirt-dev libguestfs-tools python3-lxml python3-libvirt virtinst
             go get -u github.com/golang/dep/cmd/dep
             go get github.com/mitchellh/gox
       - run:
           name: 'Setup environment'
           command: |
             export GOPATH=$GOPATH:/home/circleci/project
-            cd project
+            cd /home/circleci/project
             mkdir -p bin pkg src/github.com/mahakamcloud/netd
             mv !(bin|pkg|src) src/github.com/mahakamcloud/netd/
       - run:

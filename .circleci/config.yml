@@ -58,7 +58,7 @@ jobs:
       - run:
           name: 'Create release'
           command: |
-            cd src/github.com/mahakamcloud/netd
+            cd /home/circleci/src/github.com/mahakamcloud/netd
             dep ensure
             gox -os="linux" -arch="amd64" -output="dist/netd_{{.OS}}_{{.Arch}}"
       - run:
@@ -66,6 +66,7 @@ jobs:
           command: |
             go get github.com/tcnksm/ghr
             VERSION=$(netd --version)
+            cd /home/circleci/src/github.com/mahakamcloud/netd
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./dist/
 workflows:
   version: 2

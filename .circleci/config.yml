@@ -42,6 +42,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ./dist
+      - checkout
       - run:
           name: 'Create release'
           command: |

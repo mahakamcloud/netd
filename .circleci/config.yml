@@ -44,8 +44,8 @@ jobs:
       - run:
           name: 'Create release'
           command: |
-            export GOPATH="$HOME/.go_workspace"
-            go build -o "dist/netd"
+            go get github.com/mitchellh/gox
+            gox -os="linux" -arch="amd64" -output="dist/netd_{{.OS}}_{{.Arch}}"
       - run:
           name: 'Publish Release on Github'
           command: |

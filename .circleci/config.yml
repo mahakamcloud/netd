@@ -45,8 +45,7 @@ jobs:
       - run:
           name: 'Create release'
           command: |
-            gox -os="linux" -arch="amd64" -output="dist/netd_{{.OS}}_{{.Arch}}"
-            cd dist/ && gzip *
+            go build -o "dist/netd"
       - run:
           name: 'Publish Release on Github'
           command: |

@@ -40,8 +40,6 @@ jobs:
     machine:
       image: ubuntu-1604:201903-01
     steps:
-      - attach_workspace:
-          at: ./dist
       - checkout
       - run:
           name: 'Create release'

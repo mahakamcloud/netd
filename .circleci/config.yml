@@ -44,6 +44,7 @@ jobs:
       - run:
           name: 'Create release'
           command: |
+            export GOPATH="$HOME/.go_workspace"
             go build -o "dist/netd"
       - run:
           name: 'Publish Release on Github'

@@ -50,6 +50,7 @@ jobs:
           name: 'Setup environment'
           command: |
             export GOPATH=$GOPATH:/home/circleci/project
+            cd project
             mkdir -p bin pkg src/github.com/mahakamcloud/netd
             mv !(bin|pkg|src) src/github.com/mahakamcloud/netd/
       - run:

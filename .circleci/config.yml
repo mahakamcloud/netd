@@ -36,3 +36,33 @@ jobs:
               mahakamcloud/maha-cross:v0.1.0-3 \
               bash -c 'yum install libvirt-devel gcc -y && dep ensure -v && go get -u github.com/axw/gocov/gocov && go get -u gopkg.in/matm/v1/gocov-html && ./hack/test.sh && bash <(curl -s https://codecov.io/bash)'
           no_output_timeout: 30m
+  publish-github-release:
+    machine:
+      image: ubuntu-1604:201903-01
+    steps:
+      - attach_workspace:
+          at: ./dist
+      - run:
+          name: 'Create release'
+          command: |
+            gox -os="linux" -arch="amd64" -output="dist/netd_{{.OS}}_{{.Arch}}"
+            cd dist/ && gzip *
+      - run:
+          name: 'Publish Release on Github'
+          command: |
+            go get github.com/tcnksm/ghr
+            VERSION=$(netd --version)
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./dist/
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build
+      - publish-github-release:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/

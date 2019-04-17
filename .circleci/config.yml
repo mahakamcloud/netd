@@ -26,8 +26,8 @@ commands:
   create-release:
     steps:
       - run: cd /home/circleci
-      - run: mkdir -p pkg src/github.com/mahakamcloud/netd
-      - run: mv project/* src/github.com/mahakamcloud/netd/
+      - run: mkdir -p pkg src/github.com/mahakamcloud
+      - run: mv project src/github.com/mahakamcloud/netd
       - run: export GOPATH=$GOPATH:/home/circleci/
       - run: dep ensure
       - run: gox -os="linux" -arch="amd64" -output="dist/netd_{{.OS}}_{{.Arch}}"
@@ -60,7 +60,7 @@ workflows:
   main:
     jobs:
       - build:
-          filters:
+          filters
             tags:
               only: /.*/
       - publish-github-release:

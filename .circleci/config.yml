@@ -60,7 +60,7 @@ workflows:
   main:
     jobs:
       - build:
-          filter:
+          filters:
             tags:
               only: /.*/
       - publish-github-release:

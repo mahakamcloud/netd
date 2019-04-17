@@ -59,7 +59,10 @@ workflows:
   version: 2
   main:
     jobs:
-      - build
+      - build:
+          filter:
+            tags:
+              only: /.*/
       - publish-github-release:
           requires:
             - build

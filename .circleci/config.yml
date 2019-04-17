@@ -1,72 +1,60 @@
 version: 2.1
+
+commands:
+  install-and-configure-host-dependencies:
+    steps:
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y qemu-utils libvirt-bin libvirt-dev libguestfs-tools python3-lxml python3-libvirt virtinst
+      - run: echo 'libvirtd_opts="-l -f /etc/libvirt/libvirtd.conf"' | sudo tee -a /etc/default/libvirtd
+      - run: sudo bash -c 'cat ${LIBVIRTD_CONF} >> /etc/libvirt/libvirtd.conf'
+      - run: go get -u github.com/golang/dep/cmd/dep
+      - run: go get github.com/mitchellh/gox
+  run-unit-tests:
+    steps:
+      - run: |
+          docker run \
+          --user root \
+          --privileged \
+          --net host \
+          -v /var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock \
+          -v $PWD:/go/src/github.com/mahakamcloud/netd \
+          -w /go/src/github.com/mahakamcloud/netd \
+          -e GOCOVMODE=atomic \
+          -e CODECOV_TOKEN=$CODECOV_TOKEN \
+          mahakamcloud/maha-cross:v0.1.0-3 \
+          bash -c 'yum install libvirt-devel gcc -y && dep ensure -v && go get -u github.com/axw/gocov/gocov && go get -u gopkg.in/matm/v1/gocov-html && ./hack/test.sh && bash <(curl -s https://codecov.io/bash)'
+  create-release:
+    steps:
+      - run: cd /home/circleci
+      - run: mkdir -p pkg src/github.com/mahakamcloud/netd
+      - run: mv project/* src/github.com/mahakamcloud/netd/
+      - run: export GOPATH=$GOPATH:/home/circleci/
+      - run: dep ensure
+      - run: gox -os="linux" -arch="amd64" -output="dist/netd_{{.OS}}_{{.Arch}}"
+  publish-release:
+    steps:
+      - run: cd /home/circleci/src/github.com/mahakamcloud/netd
+      - run: go get github.com/tcnksm/ghr
+      - run: ghr -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./dist/
+
+
 jobs:
   build:
     machine:
       image: ubuntu-1604:201903-01
     steps:
       - checkout
-      - run:
-          name: Install and configure host dependencies
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y qemu-utils libvirt-bin libvirt-dev libguestfs-tools python3-lxml python3-libvirt virtinst
-
-            echo 'libvirtd_opts="-l -f /etc/libvirt/libvirtd.conf"' | sudo tee -a /etc/default/libvirtd
-
-            sudo bash -c 'cat <<EOL >> /etc/libvirt/libvirtd.conf
-            listen_tls = 0
-            listen_tcp = 1
-            auth_tcp = "none"
-            EOL'
-
-            sudo systemctl restart libvirtd.service
-      - run:
-          name: Run unit tests
-          command: |
-            # TODO(giri): need to build new image that has remaining deps
-            docker run \
-              --user root \
-              --privileged \
-              --net host \
-              -v /var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock \
-              -v $PWD:/go/src/github.com/mahakamcloud/netd \
-              -w /go/src/github.com/mahakamcloud/netd \
-              -e GOCOVMODE=atomic \
-              -e CODECOV_TOKEN=$CODECOV_TOKEN \
-              mahakamcloud/maha-cross:v0.1.0-3 \
-              bash -c 'yum install libvirt-devel gcc -y && dep ensure -v && go get -u github.com/axw/gocov/gocov && go get -u gopkg.in/matm/v1/gocov-html && ./hack/test.sh && bash <(curl -s https://codecov.io/bash)'
-          no_output_timeout: 30m
+      - install-and-configure-host-dependencies
+      - run-unit-tests
   publish-github-release:
     machine:
       image: ubuntu-1604:201903-01
     steps:
       - checkout
-      - run:
-          name: 'Install dependencies'
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y qemu-utils libvirt-bin libvirt-dev libguestfs-tools python3-lxml python3-libvirt virtinst
-            go get -u github.com/golang/dep/cmd/dep
-            go get github.com/mitchellh/gox
-      - run:
-          name: 'Setup environment'
-          command: |
-            cd /home/circleci
-            mkdir -p pkg src/github.com/mahakamcloud/netd
-            mv project/* src/github.com/mahakamcloud/netd/
-      - run:
-          name: 'Create release'
-          command: |
-            export GOPATH=$GOPATH:/home/circleci/
-            cd /home/circleci/src/github.com/mahakamcloud/netd
-            dep ensure
-            gox -os="linux" -arch="amd64" -output="dist/netd_{{.OS}}_{{.Arch}}"
-      - run:
-          name: 'Publish Release on Github'
-          command: |
-            go get github.com/tcnksm/ghr
-            cd /home/circleci/src/github.com/mahakamcloud/netd
-            ghr -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./dist/
+      - install-and-configure-host-dependencies
+      - create-release
+      - publish-release
+
 workflows:
   version: 2
   main:

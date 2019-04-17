@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 jobs:
   build:
     machine:
@@ -75,3 +75,8 @@ workflows:
       - publish-github-release:
           requires:
             - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/

@@ -26,11 +26,12 @@ commands:
   create-release:
     steps:
       - run: |
-          cd /home/circleci &&
-          mkdir -p pkg src/github.com/mahakamcloud &&
-          mv project src/github.com/mahakamcloud/netd &&
-          export GOPATH=$GOPATH:/home/circleci/ &&
-          dep ensure &&
+          cd /home/circleci
+          mkdir -p pkg src/github.com/mahakamcloud
+          mv project src/github.com/mahakamcloud/netd
+          export GOPATH=$GOPATH:/home/circleci/
+          cd /home/circleci/src/github.com/mahakamcloud/netd
+          dep ensure
           gox -os="linux" -arch="amd64" -output="dist/netd_{{.OS}}_{{.Arch}}"
   publish-release:
     steps:
